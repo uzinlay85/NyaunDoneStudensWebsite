@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ကျောင်းသားများ စစ်ဆေးရေး</title>
+    <title>၁၃၈၇-၂၀၂၅-ခုနှစ် ပါဠိတက္ကသိုလ်ညောင်တုန်းကျောင်းတိုက် သံဃာစာရင်း</title>
     <script src="https://unpkg.com/papaparse@latest/papaparse.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <style>
@@ -47,7 +47,7 @@
 </head>
 <body class="bg-gray-100 p-4">
     <div class="container mx-auto">
-        <h1 class="text-2xl font-bold mb-4">ကျောင်းသားများ စစ်ဆေးရေး</h1>
+        <h1 class="text-2xl font-bold mb-4">၁၃၈၇-၂၀၂၅-ခုနှစ် ပါဠိတက္ကသိုလ်ညောင်တုန်းကျောင်းတိုက် သံဃာစာရင်း</h1>
         <div id="totalCount" class="total-count"></div>
         <!-- Filters -->
         <div class="mb-4">
@@ -67,10 +67,10 @@
             </select>
             <select id="customSubjectFilter" class="border p-2" style="display:none;" onChange="applyFilters()">
                 <option value="">ဘာသာရပ်ကို ရွေးပါ</option>
-                <option value="P">ပါဠိ</option>
-                <option value="TH">သမိုင်း</option>
-                <option value="N">နံပါတ်</option>
-                <option value="O">အခြား</option>
+                <option value="P">ပါ</option>
+                <option value="TH">သီ</option>
+                <option value="N">ဏီ</option>
+                <option value="O">သစ်/ဟောင်း</option>
             </select>
         </div>
         <table id="studentTable">
@@ -180,7 +180,14 @@
 
             totalCount.textContent = `ရွေးချယ်ထားသည့် ကျောင်းသားရေအရေအတွက်: ${filteredData.length} ဦး`;
             tableBody.innerHTML = '';
-            filteredData.forEach((student, index) => {
+            // Sort by C_Num if classFilter is selected
+            const sortedData = classFilter ? [...filteredData].sort((a, b) => {
+                const numA = a.C_Num ? parseInt(a.C_Num) : Infinity;
+                const numB = b.C_Num ? parseInt(b.C_Num) : Infinity;
+                return numA - numB;
+            }) : filteredData;
+
+            sortedData.forEach((student, index) => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>${index + 1}</td>
