@@ -31,6 +31,18 @@
             font-weight: bold;
             margin-bottom: 10px;
         }
+        .copy-button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .copy-button:hover {
+            background-color: #45a049;
+        }
     </style>
 </head>
 <body class="bg-gray-100 p-4">
@@ -65,7 +77,6 @@
             <thead>
                 <tr>
                     <th>နံပါတ်စဉ်</th>
-                    <th>ID</th>
                     <th>နာမည်</th>
                     <th>အတန်း</th>
                     <th>ကျောင်း</th>
@@ -79,6 +90,7 @@
             <tbody id="studentBody"></tbody>
         </table>
         <div id="errorMessage" class="error"></div>
+        <button id="copyButton" class="copy-button" onclick="copyTable()">စာရင်းကို ကူးယူမည်</button>
     </div>
 
     <script>
@@ -172,7 +184,6 @@
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>${index + 1}</td>
-                    <td>${student.ID}</td>
                     <td>${student.Name}</td>
                     <td>${student.Class}</td>
                     <td>${student.School}</td>
@@ -191,6 +202,21 @@
             } else {
                 customSubjectFilter.style.display = 'none';
             }
+        };
+
+        const copyTable = () => {
+            const table = document.getElementById('studentTable');
+            let text = '';
+            const headers = Array.from(table.querySelectorAll('th')).map(th => th.textContent).join('\t');
+            text += headers + '\n';
+            const rows = table.querySelectorAll('tbody tr');
+            rows.forEach(row => {
+                const cells = Array.from(row.querySelectorAll('td')).map(td => td.textContent).join('\t');
+                text += cells + '\n';
+            });
+            navigator.clipboard.writeText(text)
+                .then(() => alert('စာရင်းကို အောင်မြင်စွာ ကူးယူပြီးပါသည်!'))
+                .catch(err => console.error('Copy failed:', err));
         };
 
         // Load data when page loads
