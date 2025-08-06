@@ -27,11 +27,16 @@
             color: red;
             margin-top: 10px;
         }
+        .total-count {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body class="bg-gray-100 p-4">
     <div class="container mx-auto">
         <h1 class="text-2xl font-bold mb-4">ကျောင်းသားများ စစ်ဆေးရေး</h1>
+        <div id="totalCount" class="total-count"></div>
         <!-- Filters -->
         <div class="mb-4">
             <select id="classFilter" class="border p-2 mr-2" onChange="applyFilters()">
@@ -59,6 +64,7 @@
         <table id="studentTable">
             <thead>
                 <tr>
+                    <th>နံပါတ်စဉ်</th>
                     <th>ID</th>
                     <th>နာမည်</th>
                     <th>အတန်း</th>
@@ -137,6 +143,7 @@
 
         const applyFilters = () => {
             const tableBody = document.getElementById('studentBody');
+            const totalCount = document.getElementById('totalCount');
             const classFilter = document.getElementById('classFilter').value;
             const schoolFilter = document.getElementById('schoolFilter').value;
             const subjectCountFilter = document.getElementById('subjectCountFilter').value;
@@ -159,10 +166,12 @@
                        subjectMatch;
             });
 
+            totalCount.textContent = `ရွေးချယ်ထားသည့် ကျောင်းသားရေအရေအတွက်: ${filteredData.length} ဦး`;
             tableBody.innerHTML = '';
-            filteredData.forEach(student => {
+            filteredData.forEach((student, index) => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
+                    <td>${index + 1}</td>
                     <td>${student.ID}</td>
                     <td>${student.Name}</td>
                     <td>${student.Class}</td>
