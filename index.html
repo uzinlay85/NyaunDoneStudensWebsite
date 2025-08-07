@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>၁၃၈၇-၂၀၂၅-ခုနှစ် ပါဠိတက္ကသိုလ်ညောင်တုန်းကျောင်းတိုက် သံဃာစာရင်း</title>
+    <title>ညောင်းတုန်းကျောင်းတိုက် သံဃာတော်များ</title>
     <script src="https://unpkg.com/papaparse@latest/papaparse.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <style>
@@ -213,13 +213,21 @@
 
         const copyTable = () => {
             const table = document.getElementById('studentTable');
+            const classFilter = document.getElementById('classFilter').value;
+            const schoolFilter = document.getElementById('schoolFilter').value;
+            const subjectCountFilter = document.getElementById('subjectCountFilter').value;
+            const customSubjectFilter = document.getElementById('customSubjectFilter').value;
+            const totalCount = document.getElementById('totalCount').textContent.match(/\d+/)[0];
+
             let text = '';
+            // Custom header based on filters
+            text += `၁-အတန်း: ${classFilter || 'မရွေးချယ်ရ'} | ကျောင်း: ${schoolFilter || 'မရွေးချယ်ရ'} | ဘာသာရပ်: ${subjectCountFilter === 'custom' ? customSubjectFilter : subjectCountFilter || 'မရွေးချယ်ရ'} | သံဃာတော် (${totalCount}) ပါး\n`;
             const headers = Array.from(table.querySelectorAll('th')).map(th => th.textContent).join('\t');
             text += headers + '\n';
             const rows = table.querySelectorAll('tbody tr');
-            rows.forEach(row => {
-                const cells = Array.from(row.querySelectorAll('td')).map(td => td.textContent).join('\t');
-                text += cells + '\n';
+            rows.forEach((row, index) => {
+                const cells = Array.from(row.querySelectorAll('td')).map(td => td.textContent);
+                text += `${String(index + 1).padStart(2, '0')}-${cells.join('\t')}\n`;
             });
             navigator.clipboard.writeText(text)
                 .then(() => alert('စာရင်းကို အောင်မြင်စွာ ကူးယူပြီးပါသည်!'))
