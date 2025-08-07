@@ -112,7 +112,6 @@
                         skipEmptyLines: true,
                         complete: (result) => {
                             allData = result.data.map(row => ({
-                                ID: row.ID || '',
                                 Name: row.Name || '',
                                 Class: row.Class || '',
                                 School: row.School || '',
@@ -178,7 +177,11 @@
                        subjectMatch;
             });
 
-            totalCount.textContent = `ရွေးချယ်ထားသည့် သံဃာတော်အရေအတွက်: ${filteredData.length} ဦး`;
+            // Count monks and novices
+            const monksCount = filteredData.filter(student => !student.Name.startsWith('ရှင်')).length;
+            const novicesCount = filteredData.filter(student => student.Name.startsWith('ရှင်')).length;
+
+            totalCount.textContent = `ရွေးချယ်ထားသည့် သံဃာတော်အရေအတွက်: ${filteredData.length} ပါး၊ ရဟန်း (${monksCount}) ပါး၊ သာမဏေ (${novicesCount}) ပါး`;
             tableBody.innerHTML = '';
             // Sort by C_Num if classFilter is selected
             const sortedData = classFilter ? [...filteredData].sort((a, b) => {
@@ -217,11 +220,14 @@
             const schoolFilter = document.getElementById('schoolFilter').value;
             const subjectCountFilter = document.getElementById('subjectCountFilter').value;
             const customSubjectFilter = document.getElementById('customSubjectFilter').value;
-            const totalCount = document.getElementById('totalCount').textContent.match(/\d+/)[0];
+            const totalCountText = document.getElementById('totalCount').textContent;
+            const totalCount = totalCountText.match(/\d+/)[0];
+            const monksCount = totalCountText.match(/ရဟန်း \(\d+\)/)[0].match(/\d+/)[0];
+            const novicesCount = totalCountText.match(/သာမဏေ \(\d+\)/)[0].match(/\d+/)[0];
 
             let text = '';
             // Custom header based on filters
-            text += `၁-အတန်း: ${classFilter || 'မရွေးချယ်ရ'} | ကျောင်း: ${schoolFilter || 'မရွေးချယ်ရ'} | ဘာသာရပ်: ${subjectCountFilter === 'custom' ? customSubjectFilter : subjectCountFilter || 'မရွေးချယ်ရ'} | သံဃာတော် (${totalCount}) ပါး\n`;
+            text += `၁-အတန်း: ${classFilter || 'မရွေးချယ်ရ'} | ကျောင်း: ${schoolFilter || 'မရွေးချယ်ရ'} | ဘာသာရပ်: ${subjectCountFilter === 'custom' ? customSubjectFilter : subjectCountFilter || 'မရွေးချယ်ရ'} | သံဃာတော် (${totalCount}) ပါး၊ ရဟန်း (${monksCount}) ပါး၊ သာမဏေ (${novicesCount}) ပါး\n`;
             const headers = Array.from(table.querySelectorAll('th')).map(th => th.textContent).join('\t');
             text += headers + '\n';
             const rows = table.querySelectorAll('tbody tr');
