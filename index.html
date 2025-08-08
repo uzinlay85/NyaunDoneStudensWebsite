@@ -10,62 +10,73 @@
         @import url('https://fonts.cdnfonts.com/css/padauk' );
         body {
             font-family: 'Padauk', sans-serif;
-            background-color: #111827; /* Dark background */
-            color: #d1d5db; /* Light text */
+            background-color: #f8fafc; /* Light, clean background (Slate 50) */
+            color: #334155; /* Darker text for contrast (Slate 700) */
         }
         .container {
-            max-width: 1200px;
+            max-width: 1280px;
             margin: auto;
-            padding: 2rem;
+            padding: 1.5rem;
+        }
+        .header {
+            border-bottom: 1px solid #e2e8f0; /* Slate 200 */
+            padding-bottom: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .card {
+            background-color: #ffffff;
+            border-radius: 0.75rem; /* Rounded corners */
+            border: 1px solid #e2e8f0; /* Slate 200 */
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.05);
+            margin-bottom: 1.5rem;
         }
         .table-container {
             overflow-x: auto; /* Enable horizontal scrolling on small screens */
-            border-radius: 0.5rem;
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
         }
         table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 800px; /* Minimum width to prevent cramping */
+            min-width: 800px;
         }
         th, td {
-            padding: 1rem;
+            padding: 1rem 1.25rem;
             text-align: left;
-            border-bottom: 1px solid #374151; /* Darker border */
+            border-bottom: 1px solid #e2e8f0; /* Slate 200 */
         }
         thead {
-            background-color: #1f2937; /* Darker header */
+            background-color: #f1f5f9; /* Slate 100 */
         }
         th {
             font-weight: 600;
-            color: #9ca3af;
+            color: #475569; /* Slate 600 */
             text-transform: uppercase;
+            font-size: 0.75rem;
             letter-spacing: 0.05em;
         }
         tbody tr:hover {
-            background-color: #374151; /* Hover effect */
+            background-color: #f1f5f9; /* Hover effect (Slate 100) */
         }
         .filter-container {
             display: flex;
             flex-wrap: wrap;
             gap: 1rem;
-            margin-bottom: 1.5rem;
         }
         select {
-            background-color: #374151;
-            border: 1px solid #4b5563;
+            background-color: #ffffff;
+            border: 1px solid #cbd5e1; /* Slate 300 */
             border-radius: 0.375rem;
             padding: 0.6rem 1rem;
-            color: #d1d5db;
+            color: #334155; /* Slate 700 */
             transition: border-color 0.2s, box-shadow 0.2s;
         }
         select:focus {
             outline: none;
-            border-color: #4f46e5;
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.5);
+            border-color: #3b82f6; /* Blue 500 */
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
         }
         .copy-button {
-            background-color: #4f46e5; /* Indigo */
+            background-color: #2563eb; /* Blue 600 */
             color: white;
             padding: 0.75rem 1.5rem;
             border: none;
@@ -73,61 +84,79 @@
             cursor: pointer;
             font-weight: 600;
             margin-top: 1.5rem;
-            transition: background-color 0.2s;
+            transition: background-color 0.2s, transform 0.1s;
         }
         .copy-button:hover {
-            background-color: #4338ca;
+            background-color: #1d4ed8; /* Blue 700 */
+        }
+        .copy-button:active {
+            transform: scale(0.98);
         }
         .total-count {
-            background-color: #1f2937;
-            padding: 1rem;
-            border-radius: 0.5rem;
-            margin-bottom: 1.5rem;
-            font-weight: 600;
-            color: #f59e0b; /* Amber color for emphasis */
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
+        }
+        .total-count .count-item span {
+            display: block;
+            font-size: 0.875rem;
+            color: #64748b; /* Slate 500 */
+        }
+        .total-count .count-item strong {
+            display: block;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1e3a8a; /* Blue 900 */
         }
         .error {
-            color: #ef4444; /* Red for errors */
+            color: #b91c1c; /* Red 700 */
             margin-top: 1rem;
-            background-color: #3f3f46;
+            background-color: #fee2e2; /* Red 100 */
             padding: 1rem;
             border-radius: 0.5rem;
+            border: 1px solid #fecaca; /* Red 200 */
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1 class="text-3xl font-bold mb-2 text-white">ပါဠိတက္ကသိုလ်ညောင်တုန်းကျောင်းတိုက်</h1>
-        <p class="text-lg mb-6 text-gray-400">၁၃၈၇ (၂၀၂၅) ခုနှစ် သံဃာစာရင်း</p>
-
-        <div id="totalCount" class="total-count"></div>
-
-        <!-- Filters -->
-        <div class="filter-container">
-            <select id="classFilter" onChange="applyFilters()">
-                <option value="">အတန်းအားလုံး</option>
-            </select>
-            <select id="schoolFilter" onChange="applyFilters()">
-                <option value="">ကျောင်းအားလုံး</option>
-            </select>
-            <select id="subjectCountFilter" onChange="applyFilters()">
-                <option value="">ဘာသာရပ် အရေအတွက်</option>
-                <option value="4">၄ ဘာသာ</option>
-                <option value="3">၃ ဘာသာ</option>
-                <option value="2">၂ ဘာသာ</option>
-                <option value="1">၁ ဘာသာ</option>
-                <option value="custom">ဘာသာရပ်ဖြင့်ရှာရန်</option>
-            </select>
-            <select id="customSubjectFilter" style="display:none;" onChange="applyFilters()">
-                <option value="">ဘာသာရပ် ရွေးပါ</option>
-                <option value="P">ပါ</option>
-                <option value="TH">သီ</option>
-                <option value="N">ဏီ</option>
-                <option value="O">သစ်/ဟောင်း</option>
-            </select>
+        <div class="header">
+            <h1 class="text-3xl font-bold text-slate-900">ပါဠိတက္ကသိုလ်ညောင်တုန်းကျောင်းတိုက်</h1>
+            <p class="text-lg text-slate-500">၁၃၈၇ (၂၀၂၅) ခုနှစ် သံဃာစာရင်း</p>
         </div>
 
-        <div class="table-container">
+        <div class="card total-count" id="totalCount">
+            <!-- Content generated by JS -->
+        </div>
+
+        <!-- Filters -->
+        <div class="card">
+            <div class="filter-container">
+                <select id="classFilter" onChange="applyFilters()">
+                    <option value="">အတန်းအားလုံး</option>
+                </select>
+                <select id="schoolFilter" onChange="applyFilters()">
+                    <option value="">ကျောင်းအားလုံး</option>
+                </select>
+                <select id="subjectCountFilter" onChange="applyFilters()">
+                    <option value="">ဘာသာရပ် အရေအတွက်</option>
+                    <option value="4">၄ ဘာသာ</option>
+                    <option value="3">၃ ဘာသာ</option>
+                    <option value="2">၂ ဘာသာ</option>
+                    <option value="1">၁ ဘာသာ</option>
+                    <option value="custom">ဘာသာရပ်ဖြင့်ရှာရန်</option>
+                </select>
+                <select id="customSubjectFilter" style="display:none;" onChange="applyFilters()">
+                    <option value="">ဘာသာရပ် ရွေးပါ</option>
+                    <option value="P">ပါ</option>
+                    <option value="TH">သီ</option>
+                    <option value="N">ဏီ</option>
+                    <option value="O">သစ်/ဟောင်း</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="card table-container">
             <table>
                 <thead>
                     <tr>
@@ -146,7 +175,7 @@
             </table>
         </div>
 
-        <div id="errorMessage" class="error"></div>
+        <div id="errorMessage" class="error" style="display: none;"></div>
         <button id="copyButton" class="copy-button" onclick="copyTable()">လက်ရှိစာရင်းကို ကူးယူမည်</button>
     </div>
 
@@ -161,9 +190,7 @@
 
             fetch('students.csv')
                 .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`Network response was not ok: ${response.statusText}`);
-                    }
+                    if (!response.ok) throw new Error(`Network response was not ok: ${response.statusText}`);
                     return response.text();
                 })
                 .then(csvText => {
@@ -171,50 +198,34 @@
                         header: true,
                         skipEmptyLines: true,
                         complete: (result) => {
-                            if (result.errors.length > 0) {
+                            if (result.errors.length) {
                                 console.error('CSV parsing errors:', result.errors);
                                 errorDiv.textContent = `CSV ဖိုင်ကို ဖတ်ရာတွင် အမှားအယွင်းများရှိနေပါသည်: ${result.errors[0].message}`;
+                                errorDiv.style.display = 'block';
                             }
                             
                             allData = result.data.map(row => ({
-                                Name: row.Name || '',
-                                Class: row.Class || '',
-                                School: row.School || '',
-                                C_Num: row.C_Num || '',
-                                P: row.P || '',
-                                TH: row.TH || '',
-                                N: row.N || '',
-                                O: row.O || ''
+                                Name: row.Name || '', Class: row.Class || '', School: row.School || '',
+                                C_Num: row.C_Num || '', P: row.P || '', TH: row.TH || '', N: row.N || '', O: row.O || ''
                             }));
 
-                            // Populate dropdowns with unique values
-                            const uniqueClasses = [...new Set(allData.map(student => student.Class).filter(Boolean))].sort();
-                            const uniqueSchools = [...new Set(allData.map(student => student.School).filter(Boolean))].sort();
+                            const uniqueClasses = [...new Set(allData.map(s => s.Class).filter(Boolean))].sort();
+                            const uniqueSchools = [...new Set(allData.map(s => s.School).filter(Boolean))].sort();
                             
-                            uniqueClasses.forEach(cls => {
-                                const option = document.createElement('option');
-                                option.value = cls;
-                                option.textContent = cls;
-                                classFilter.appendChild(option);
-                            });
-                            uniqueSchools.forEach(school => {
-                                const option = document.createElement('option');
-                                option.value = school;
-                                option.textContent = school;
-                                schoolFilter.appendChild(option);
-                            });
+                            uniqueClasses.forEach(cls => classFilter.add(new Option(cls, cls)));
+                            uniqueSchools.forEach(school => schoolFilter.add(new Option(school, school)));
 
                             applyFilters();
                         },
                         error: (error) => {
                             errorDiv.textContent = `CSV ဖိုင်ဖွင့်ရာတွင် အမှားဖြစ်ပါတယ်: ${error.message}`;
-                            console.error('CSV parsing error:', error);
+                            errorDiv.style.display = 'block';
                         }
                     });
                 })
                 .catch(error => {
                     errorDiv.textContent = `CSV ဖိုင်ကို ရှာမတွေ့ပါ သို့မဟုတ် ချိတ်ဆက်၍မရပါ: ${error.message}`;
-                    console.error('Fetch error:', error);
+                    errorDiv.style.display = 'block';
                 });
         };
 
@@ -234,8 +245,7 @@
                 if (subjectCountFilterValue === 'custom' && customSubjectValue) {
                     subjectMatch = !!student[customSubjectValue];
                 } else if (subjectCountFilterValue && subjectCountFilterValue !== 'custom') {
-                    const requiredCount = parseInt(subjectCountFilterValue);
-                    subjectMatch = subjectCount === requiredCount;
+                    subjectMatch = subjectCount === parseInt(subjectCountFilterValue);
                 }
 
                 return (!classFilterValue || student.Class === classFilterValue) &&
@@ -243,75 +253,64 @@
                        subjectMatch;
             });
 
-            // Count monks and novices
-            const monksCount = filteredData.filter(student => !student.Name.startsWith('ရှင်')).length;
-            const novicesCount = filteredData.filter(student => student.Name.startsWith('ရှင်')).length;
+            const monksCount = filteredData.filter(s => !s.Name.startsWith('ရှင်')).length;
+            const novicesCount = filteredData.filter(s => s.Name.startsWith('ရှင်')).length;
 
             totalCountDiv.innerHTML = `
-                <span>စုစုပေါင်း: <strong class="text-amber-400">${filteredData.length}</strong> ပါး</span> | 
-                <span>ရဟန်း: <strong class="text-amber-400">${monksCount}</strong> ပါး</span> | 
-                <span>သာမဏေ: <strong class="text-amber-400">${novicesCount}</strong> ပါး</span>
+                <div class="count-item"><span>စုစုပေါင်း</span><strong>${filteredData.length} ပါး</strong></div>
+                <div class="count-item"><span>ရဟန်း</span><strong>${monksCount} ပါး</strong></div>
+                <div class="count-item"><span>သာမဏေ</span><strong>${novicesCount} ပါး</strong></div>
             `;
             
             tableBody.innerHTML = '';
-            // Sort by C_Num if classFilter is selected
-            const sortedData = classFilterValue ? [...filteredData].sort((a, b) => {
-                const numA = a.C_Num ? parseInt(a.C_Num.replace(/\D/g,''), 10) : Infinity;
-                const numB = b.C_Num ? parseInt(b.C_Num.replace(/\D/g,''), 10) : Infinity;
-                return numA - numB;
-            }) : filteredData;
+            const sortedData = classFilterValue 
+                ? [...filteredData].sort((a, b) => (parseInt(a.C_Num.replace(/\D/g,''), 10) || Infinity) - (parseInt(b.C_Num.replace(/\D/g,''), 10) || Infinity))
+                : filteredData;
 
             if (sortedData.length === 0) {
-                const row = document.createElement('tr');
-                const cell = document.createElement('td');
-                cell.colSpan = 9;
-                cell.textContent = 'ရှာဖွေမှုနှင့် ကိုက်ညီသော အချက်အလက်များ မရှိပါ။';
-                cell.className = 'text-center text-gray-500';
-                row.appendChild(cell);
-                tableBody.appendChild(row);
+                tableBody.innerHTML = `<tr><td colspan="9" class="text-center text-slate-500 py-8">ရှာဖွေမှုနှင့် ကိုက်ညီသော အချက်အလက်များ မရှိပါ။</td></tr>`;
             } else {
                 sortedData.forEach((student, index) => {
                     const row = document.createElement('tr');
                     row.innerHTML = `
-                        <td class="text-gray-400">${index + 1}</td>
-                        <td class="font-semibold text-white">${student.Name}</td>
+                        <td class="text-slate-500">${index + 1}</td>
+                        <td class="font-semibold text-slate-800">${student.Name}</td>
                         <td>${student.Class}</td>
                         <td>${student.School}</td>
                         <td>${student.C_Num}</td>
-                        <td class="text-center">${student.P ? '✔️' : ''}</td>
-                        <td class="text-center">${student.TH ? '✔️' : ''}</td>
-                        <td class="text-center">${student.N ? '✔️' : ''}</td>
-                        <td class="text-center">${student.O ? '✔️' : ''}</td>
+                        <td class="text-center">${student.P ? '✅' : '—'}</td>
+                        <td class="text-center">${student.TH ? '✅' : '—'}</td>
+                        <td class="text-center">${student.N ? '✅' : '—'}</td>
+                        <td class="text-center">${student.O ? '✅' : '—'}</td>
                     `;
                     tableBody.appendChild(row);
                 });
             }
 
-            // Show/hide custom subject filter based on selection
             customSubjectFilter.style.display = (subjectCountFilterValue === 'custom') ? 'inline-block' : 'none';
         };
 
         const copyTable = () => {
-            const table = document.getElementById('studentTable');
+            const table = document.querySelector('table');
             const classFilter = document.getElementById('classFilter').value;
             const schoolFilter = document.getElementById('schoolFilter').value;
-            const subjectCountFilter = document.getElementById('subjectCountFilter').value;
-            const customSubjectFilter = document.getElementById('customSubjectFilter').value;
-            const totalCountText = document.getElementById('totalCount').textContent.trim().replace(/\s+/g, ' ');
+            const totalCountDiv = document.getElementById('totalCount');
             
-            let text = '';
-            // Custom header based on filters
-            text += `၁၃၈၇-၂၀၂၅-ခုနှစ် ပါဠိတက္ကသိုလ်ညောင်တုန်းကျောင်းတိုက် သံဃာစာရင်း\n`;
-            text += `အတန်း: ${classFilter || 'အားလုံး'} | ကျောင်း: ${schoolFilter || 'အားလုံး'} | ဘာသာရပ်: ${subjectCountFilter === 'custom' ? customSubjectFilter : (subjectCountFilter || 'အားလုံး')}\n`;
-            text += `${totalCountText}\n\n`;
+            const total = totalCountDiv.querySelector('.count-item:nth-child(1) strong').textContent;
+            const monks = totalCountDiv.querySelector('.count-item:nth-child(2) strong').textContent;
+            const novices = totalCountDiv.querySelector('.count-item:nth-child(3) strong').textContent;
 
-            const headers = Array.from(table.querySelectorAll('th')).map(th => th.textContent).join('\t');
+            let text = `ညောင်တုန်းကျောင်းတိုက် သံဃာစာရင်း (${classFilter || 'အတန်းအားလုံး'}${schoolFilter ? ', ' + schoolFilter : ''})\n`;
+            text += `စုစုပေါင်း: ${total}, ရဟန်း: ${monks}, သာမဏေ: ${novices}\n\n`;
+
+            const headers = [...table.querySelectorAll('th')].map(th => th.textContent).join('\t');
             text += headers + '\n';
-            const rows = table.querySelectorAll('tbody tr');
-            rows.forEach(row => {
-                const cells = Array.from(row.querySelectorAll('td')).map(td => td.textContent);
+            
+            [...table.querySelectorAll('tbody tr')].forEach(row => {
+                const cells = [...row.querySelectorAll('td')].map(td => td.textContent.replace('✅', 'Yes').replace('—', 'No'));
                 text += cells.join('\t') + '\n';
             });
+
             navigator.clipboard.writeText(text)
                 .then(() => alert('စာရင်းကို အောင်မြင်စွာ ကူးယူပြီးပါပြီ!'))
                 .catch(err => {
@@ -320,7 +319,6 @@
                 });
         };
 
-        // Load data when page loads
         window.onload = loadStudents;
     </script>
 </body>
