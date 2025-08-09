@@ -68,7 +68,6 @@
             gap: 1rem;
             align-items: center;
         }
-        /* Updated input and select styles */
         .filter-input, select {
             background-color: #ffffff;
             border: 1px solid #d1d5db;
@@ -138,7 +137,6 @@
 
         <div class="card">
             <div class="filter-container">
-                <!-- Name Search Input -->
                 <input type="text" id="nameSearch" class="filter-input" placeholder="နာမည်ဖြင့် ရှာရန်..." onkeyup="applyFilters()">
                 
                 <select id="classFilter" class="filter-input" onChange="applyFilters()"><option value="">အတန်းအားလုံး</option></select>
@@ -244,7 +242,6 @@
         const applyFilters = () => {
             const tableBody = document.getElementById('studentBody');
             const totalCountDiv = document.getElementById('totalCount');
-            // Get search term from the new input field
             const nameSearchTerm = document.getElementById('nameSearch').value.trim();
             const classFilterValue = document.getElementById('classFilter').value;
             const schoolFilterValue = document.getElementById('schoolFilter').value;
@@ -253,9 +250,7 @@
             const customSubjectValue = customSubjectFilter.value;
 
             const filteredData = allData.filter(student => {
-                // Name search condition
                 const nameMatch = student.Name.includes(nameSearchTerm);
-
                 const subjectCount = [student.P, student.TH, student.N, student.O].filter(Boolean).length;
                 let subjectMatch = true;
                 if (subjectCountFilterValue === 'custom' && customSubjectValue) {
@@ -264,7 +259,6 @@
                     subjectMatch = subjectCount === parseInt(subjectCountFilterValue);
                 }
                 
-                // Combine all filter conditions
                 return nameMatch &&
                        (!classFilterValue || student.Class === classFilterValue) &&
                        (!schoolFilterValue || student.School === schoolFilterValue) &&
@@ -288,6 +282,7 @@
             } else {
                 sortedData.forEach((student, index) => {
                     const row = document.createElement('tr');
+                    // *** CORRECTED THIS LINE ***
                     row.innerHTML = `
                         <td class="text-left-cell text-gray-500">${index + 1}</td>
                         <td class="text-left-cell font-bold text-gray-700">${student.Name}</td>
@@ -297,7 +292,7 @@
                         <td class="text-center-cell">${student.P ? '✅' : '—'}</td>
                         <td class="text-center-cell">${student.TH ? '✅' : '—'}</td>
                         <td class="text-center-cell">${student.N ? '✅' : '—'}</td>
-                        <td class="text-center-cell">${student.O ? '—'}</td>
+                        <td class="text-center-cell">${student.O ? '✅' : '—'}</td>
                     `;
                     tableBody.appendChild(row);
                 });
