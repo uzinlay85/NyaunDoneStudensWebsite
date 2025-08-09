@@ -11,10 +11,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Pyidaungsu:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body {
-            /* Change font-family to Pyidaungsu */
             font-family: 'Pyidaungsu', sans-serif;
-            background-color: #f9fafb; /* Neutral, very light gray background */
-            color: #374151; /* Slate 700 for primary text */
+            background-color: #f9fafb;
+            color: #374151;
         }
         .container {
             max-width: 1280px;
@@ -28,7 +27,7 @@
         .card {
             background-color: #ffffff;
             border-radius: 0.75rem;
-            border: 1px solid #e5e7eb; /* Gray 200 */
+            border: 1px solid #e5e7eb;
             padding: 1.5rem;
             box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05 );
             margin-bottom: 1.5rem;
@@ -42,17 +41,17 @@
             min-width: 800px;
         }
         th, td {
-            padding: 1rem 1.5rem; /* Increased padding for better spacing */
+            padding: 1rem 1.5rem;
             text-align: left;
-            border-bottom: 1px solid #e5e7eb; /* Gray 200 */
-            vertical-align: middle; /* Ensure vertical alignment */
+            border-bottom: 1px solid #e5e7eb;
+            vertical-align: middle;
         }
         thead {
-            background-color: #f3f4f6; /* Gray 100 */
+            background-color: #f3f4f6;
         }
         th {
-            font-weight: 700; /* Bolder for Pyidaungsu */
-            color: #4b5563; /* Gray 600 */
+            font-weight: 700;
+            color: #4b5563;
             text-transform: uppercase;
             font-size: 0.8rem;
             letter-spacing: 0.05em;
@@ -71,20 +70,20 @@
         }
         select {
             background-color: #ffffff;
-            border: 1px solid #d1d5db; /* Gray 300 */
+            border: 1px solid #d1d5db;
             border-radius: 0.5rem;
             padding: 0.6rem 1rem;
             color: #374151;
             transition: border-color 0.2s, box-shadow 0.2s;
-            font-family: 'Pyidaungsu', sans-serif; /* Ensure select uses the font */
+            font-family: 'Pyidaungsu', sans-serif;
         }
         select:focus {
             outline: none;
-            border-color: #60a5fa; /* Blue 400 */
+            border-color: #60a5fa;
             box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.3);
         }
         .copy-button {
-            background-color: #3b82f6; /* Blue 500 */
+            background-color: #3b82f6;
             color: white;
             padding: 0.75rem 1.5rem;
             border: none;
@@ -95,7 +94,7 @@
             transition: background-color 0.2s, transform 0.1s;
         }
         .copy-button:hover {
-            background-color: #2563eb; /* Blue 600 */
+            background-color: #2563eb;
         }
         .copy-button:active {
             transform: scale(0.98);
@@ -107,23 +106,22 @@
         }
         .total-count .count-item span {
             font-size: 0.9rem;
-            color: #6b7280; /* Gray 500 */
+            color: #6b7280;
         }
         .total-count .count-item strong {
             display: block;
             font-size: 1.75rem;
             font-weight: 700;
-            color: #1e40af; /* Blue 800 */
+            color: #1e40af;
         }
         .error {
-            color: #991b1b; /* Red 800 */
+            color: #991b1b;
             margin-top: 1rem;
-            background-color: #fee2e2; /* Red 100 */
+            background-color: #fee2e2;
             padding: 1rem;
             border-radius: 0.5rem;
-            border: 1px solid #fca5a5; /* Red 300 */
+            border: 1px solid #fca5a5;
         }
-        /* Alignment specific classes */
         .text-center-cell { text-align: center; }
         .text-left-cell { text-align: left; }
     </style>
@@ -135,9 +133,7 @@
             <p class="text-lg text-gray-500 mt-1">၁၃၈၇ (၂၀၂၅) ခုနှစ် သံဃာစာရင်း</p>
         </div>
 
-        <div class="card total-count" id="totalCount">
-            <!-- JS will populate this -->
-        </div>
+        <div class="card total-count" id="totalCount"></div>
 
         <div class="card">
             <div class="filter-container">
@@ -185,7 +181,6 @@
         let allData = [];
 
         const loadStudents = () => {
-            const tableBody = document.getElementById('studentBody');
             const errorDiv = document.getElementById('errorMessage');
             const classFilter = document.getElementById('classFilter');
             const schoolFilter = document.getElementById('schoolFilter');
@@ -203,15 +198,47 @@
                                 console.error('CSV parsing errors:', result.errors);
                                 errorDiv.textContent = `CSV ဖိုင်ကို ဖတ်ရာတွင် အမှားအယွင်းများရှိနေပါသည်: ${result.errors[0].message}`;
                                 errorDiv.style.display = 'block';
+                                return;
                             }
                             allData = result.data.map(row => ({
                                 Name: row.Name || '', Class: row.Class || '', School: row.School || '',
                                 C_Num: row.C_Num || '', P: row.P || '', TH: row.TH || '', N: row.N || '', O: row.O || ''
                             }));
-                            const uniqueClasses = [...new Set(allData.map(s => s.Class).filter(Boolean))].sort();
-                            const uniqueSchools = [...new Set(allData.map(s => s.School).filter(Boolean))].sort();
-                            uniqueClasses.forEach(cls => classFilter.add(new Option(cls, cls)));
-                            uniqueSchools.forEach(school => schoolFilter.add(new Option(school, school)));
+
+                            // *** START: Modified section to add counts to dropdowns ***
+                            
+                            // Calculate counts for each class
+                            const classCounts = allData.reduce((acc, student) => {
+                                if (student.Class) {
+                                    acc[student.Class] = (acc[student.Class] || 0) + 1;
+                                }
+                                return acc;
+                            }, {});
+
+                            // Calculate counts for each school
+                            const schoolCounts = allData.reduce((acc, student) => {
+                                if (student.School) {
+                                    acc[student.School] = (acc[student.School] || 0) + 1;
+                                }
+                                return acc;
+                            }, {});
+
+                            // Populate class filter with counts
+                            const sortedClasses = Object.keys(classCounts).sort();
+                            sortedClasses.forEach(cls => {
+                                const optionText = `${cls} (${classCounts[cls]} ပါး)`;
+                                classFilter.add(new Option(optionText, cls));
+                            });
+
+                            // Populate school filter with counts
+                            const sortedSchools = Object.keys(schoolCounts).sort();
+                            sortedSchools.forEach(school => {
+                                const optionText = `${school} (${schoolCounts[school]} ပါး)`;
+                                schoolFilter.add(new Option(optionText, school));
+                            });
+
+                            // *** END: Modified section ***
+
                             applyFilters();
                         },
                         error: (error) => {
@@ -284,13 +311,13 @@
 
         const copyTable = () => {
             const table = document.querySelector('table');
-            const classFilter = document.getElementById('classFilter').value;
-            const schoolFilter = document.getElementById('schoolFilter').value;
+            const classFilter = document.getElementById('classFilter').options[document.getElementById('classFilter').selectedIndex].text;
+            const schoolFilter = document.getElementById('schoolFilter').options[document.getElementById('schoolFilter').selectedIndex].text;
             const totalCountDiv = document.getElementById('totalCount');
             const total = totalCountDiv.querySelector('.count-item:nth-child(1) strong').textContent;
             const monks = totalCountDiv.querySelector('.count-item:nth-child(2) strong').textContent;
             const novices = totalCountDiv.querySelector('.count-item:nth-child(3) strong').textContent;
-            let text = `ညောင်တုန်းကျောင်းတိုက် သံဃာစာရင်း (${classFilter || 'အတန်းအားလုံး'}${schoolFilter ? ', ' + schoolFilter : ''})\n`;
+            let text = `ညောင်တုန်းကျောင်းတိုက် သံဃာစာရင်း\nFilter: ${classFilter}, ${schoolFilter}\n`;
             text += `စုစုပေါင်း: ${total}, ရဟန်း: ${monks}, သာမဏေ: ${novices}\n\n`;
             const headers = [...table.querySelectorAll('th')].map(th => th.textContent).join('\t');
             text += headers + '\n';
