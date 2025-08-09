@@ -68,7 +68,8 @@
             gap: 1rem;
             align-items: center;
         }
-        select {
+        /* Updated input and select styles */
+        .filter-input, select {
             background-color: #ffffff;
             border: 1px solid #d1d5db;
             border-radius: 0.5rem;
@@ -77,7 +78,7 @@
             transition: border-color 0.2s, box-shadow 0.2s;
             font-family: 'Pyidaungsu', sans-serif;
         }
-        select:focus {
+        .filter-input:focus, select:focus {
             outline: none;
             border-color: #60a5fa;
             box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.3);
@@ -137,9 +138,12 @@
 
         <div class="card">
             <div class="filter-container">
-                <select id="classFilter" onChange="applyFilters()"><option value="">အတန်းအားလုံး</option></select>
-                <select id="schoolFilter" onChange="applyFilters()"><option value="">ကျောင်းအားလုံး</option></select>
-                <select id="subjectCountFilter" onChange="applyFilters()">
+                <!-- Name Search Input -->
+                <input type="text" id="nameSearch" class="filter-input" placeholder="နာမည်ဖြင့် ရှာရန်..." onkeyup="applyFilters()">
+                
+                <select id="classFilter" class="filter-input" onChange="applyFilters()"><option value="">အတန်းအားလုံး</option></select>
+                <select id="schoolFilter" class="filter-input" onChange="applyFilters()"><option value="">ကျောင်းအားလုံး</option></select>
+                <select id="subjectCountFilter" class="filter-input" onChange="applyFilters()">
                     <option value="">ဘာသာရပ် အရေအတွက်</option>
                     <option value="4">၄ ဘာသာ</option>
                     <option value="3">၃ ဘာသာ</option>
@@ -147,7 +151,7 @@
                     <option value="1">၁ ဘာသာ</option>
                     <option value="custom">ဘာသာရပ်ဖြင့်ရှာရန်</option>
                 </select>
-                <select id="customSubjectFilter" style="display:none;" onChange="applyFilters()">
+                <select id="customSubjectFilter" class="filter-input" style="display:none;" onChange="applyFilters()">
                     <option value="">ဘာသာရပ် ရွေးပါ</option>
                     <option value="P">ပါ</option><option value="TH">သီ</option><option value="N">ဏီ</option><option value="O">သစ်/ဟောင်း</option>
                 </select>
@@ -205,39 +209,23 @@
                                 C_Num: row.C_Num || '', P: row.P || '', TH: row.TH || '', N: row.N || '', O: row.O || ''
                             }));
 
-                            // *** START: Modified section to add counts to dropdowns ***
-                            
-                            // Calculate counts for each class
                             const classCounts = allData.reduce((acc, student) => {
-                                if (student.Class) {
-                                    acc[student.Class] = (acc[student.Class] || 0) + 1;
-                                }
+                                if (student.Class) acc[student.Class] = (acc[student.Class] || 0) + 1;
                                 return acc;
                             }, {});
-
-                            // Calculate counts for each school
                             const schoolCounts = allData.reduce((acc, student) => {
-                                if (student.School) {
-                                    acc[student.School] = (acc[student.School] || 0) + 1;
-                                }
+                                if (student.School) acc[student.School] = (acc[student.School] || 0) + 1;
                                 return acc;
                             }, {});
 
-                            // Populate class filter with counts
                             const sortedClasses = Object.keys(classCounts).sort();
                             sortedClasses.forEach(cls => {
-                                const optionText = `${cls} (${classCounts[cls]} ပါး)`;
-                                classFilter.add(new Option(optionText, cls));
+                                classFilter.add(new Option(`${cls} (${classCounts[cls]} ပါး)`, cls));
                             });
-
-                            // Populate school filter with counts
                             const sortedSchools = Object.keys(schoolCounts).sort();
                             sortedSchools.forEach(school => {
-                                const optionText = `${school} (${schoolCounts[school]} ပါး)`;
-                                schoolFilter.add(new Option(optionText, school));
+                                schoolFilter.add(new Option(`${school} (${schoolCounts[school]} ပါး)`, school));
                             });
-
-                            // *** END: Modified section ***
 
                             applyFilters();
                         },
@@ -256,6 +244,8 @@
         const applyFilters = () => {
             const tableBody = document.getElementById('studentBody');
             const totalCountDiv = document.getElementById('totalCount');
+            // Get search term from the new input field
+            const nameSearchTerm = document.getElementById('nameSearch').value.trim();
             const classFilterValue = document.getElementById('classFilter').value;
             const schoolFilterValue = document.getElementById('schoolFilter').value;
             const subjectCountFilterValue = document.getElementById('subjectCountFilter').value;
@@ -263,6 +253,9 @@
             const customSubjectValue = customSubjectFilter.value;
 
             const filteredData = allData.filter(student => {
+                // Name search condition
+                const nameMatch = student.Name.includes(nameSearchTerm);
+
                 const subjectCount = [student.P, student.TH, student.N, student.O].filter(Boolean).length;
                 let subjectMatch = true;
                 if (subjectCountFilterValue === 'custom' && customSubjectValue) {
@@ -270,7 +263,10 @@
                 } else if (subjectCountFilterValue && subjectCountFilterValue !== 'custom') {
                     subjectMatch = subjectCount === parseInt(subjectCountFilterValue);
                 }
-                return (!classFilterValue || student.Class === classFilterValue) &&
+                
+                // Combine all filter conditions
+                return nameMatch &&
+                       (!classFilterValue || student.Class === classFilterValue) &&
                        (!schoolFilterValue || student.School === schoolFilterValue) &&
                        subjectMatch;
             });
@@ -301,7 +297,7 @@
                         <td class="text-center-cell">${student.P ? '✅' : '—'}</td>
                         <td class="text-center-cell">${student.TH ? '✅' : '—'}</td>
                         <td class="text-center-cell">${student.N ? '✅' : '—'}</td>
-                        <td class="text-center-cell">${student.O ? '✅' : '—'}</td>
+                        <td class="text-center-cell">${student.O ? '—'}</td>
                     `;
                     tableBody.appendChild(row);
                 });
