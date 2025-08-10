@@ -15,113 +15,25 @@
             background-color: #f9fafb;
             color: #374151;
         }
-        .container {
-            max-width: 1280px;
-            margin: auto;
-            padding: 2rem;
-        }
-        .header {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-        .card {
-            background-color: #ffffff;
-            border-radius: 0.75rem;
-            border: 1px solid #e5e7eb;
-            padding: 1.5rem;
-            box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05 );
-            margin-bottom: 1.5rem;
-        }
-        .table-container {
-            overflow-x: auto;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 800px;
-        }
-        th, td {
-            padding: 1rem 1.5rem;
-            text-align: left;
-            border-bottom: 1px solid #e5e7eb;
-            vertical-align: middle;
-        }
-        thead {
-            background-color: #f3f4f6;
-        }
-        th {
-            font-weight: 700;
-            color: #4b5563;
-            text-transform: uppercase;
-            font-size: 0.8rem;
-            letter-spacing: 0.05em;
-        }
-        tbody tr {
-            transition: background-color 0.15s ease-in-out;
-        }
-        tbody tr:hover {
-            background-color: #fafafa;
-        }
-        .filter-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1rem;
-            align-items: center;
-        }
-        .filter-input, select {
-            background-color: #ffffff;
-            border: 1px solid #d1d5db;
-            border-radius: 0.5rem;
-            padding: 0.6rem 1rem;
-            color: #374151;
-            transition: border-color 0.2s, box-shadow 0.2s;
-            font-family: 'Pyidaungsu', sans-serif;
-        }
-        .filter-input:focus, select:focus {
-            outline: none;
-            border-color: #60a5fa;
-            box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.3);
-        }
-        .copy-button {
-            background-color: #3b82f6;
-            color: white;
-            padding: 0.75rem 1.5rem;
-            border: none;
-            border-radius: 0.5rem;
-            cursor: pointer;
-            font-weight: 700;
-            margin-top: 1.5rem;
-            transition: background-color 0.2s, transform 0.1s;
-        }
-        .copy-button:hover {
-            background-color: #2563eb;
-        }
-        .copy-button:active {
-            transform: scale(0.98);
-        }
-        .total-count {
-            display: flex;
-            justify-content: space-around;
-            text-align: center;
-        }
-        .total-count .count-item span {
-            font-size: 0.9rem;
-            color: #6b7280;
-        }
-        .total-count .count-item strong {
-            display: block;
-            font-size: 1.75rem;
-            font-weight: 700;
-            color: #1e40af;
-        }
-        .error {
-            color: #991b1b;
-            margin-top: 1rem;
-            background-color: #fee2e2;
-            padding: 1rem;
-            border-radius: 0.5rem;
-            border: 1px solid #fca5a5;
-        }
+        .container { max-width: 1280px; margin: auto; padding: 2rem; }
+        .header { text-align: center; margin-bottom: 2rem; }
+        .card { background-color: #ffffff; border-radius: 0.75rem; border: 1px solid #e5e7eb; padding: 1.5rem; box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05 ); margin-bottom: 1.5rem; }
+        .table-container { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; min-width: 800px; }
+        th, td { padding: 1rem 1.5rem; text-align: left; border-bottom: 1px solid #e5e7eb; vertical-align: middle; }
+        thead { background-color: #f3f4f6; }
+        th { font-weight: 700; color: #4b5563; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.05em; }
+        tbody tr:hover { background-color: #fafafa; }
+        .filter-container { display: flex; flex-wrap: wrap; gap: 1rem; align-items: center; }
+        input[type="text"], select { background-color: #ffffff; border: 1px solid #d1d5db; border-radius: 0.5rem; padding: 0.6rem 1rem; color: #374151; transition: border-color 0.2s, box-shadow 0.2s; font-family: 'Pyidaungsu', sans-serif; }
+        input[type="text"]:focus, select:focus { outline: none; border-color: #60a5fa; box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.3); }
+        .copy-button { background-color: #3b82f6; color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 0.5rem; cursor: pointer; font-weight: 700; margin-top: 1.5rem; transition: background-color 0.2s, transform 0.1s; }
+        .copy-button:hover { background-color: #2563eb; }
+        .copy-button:active { transform: scale(0.98); }
+        .total-count { display: flex; justify-content: space-around; text-align: center; }
+        .total-count .count-item span { font-size: 0.9rem; color: #6b7280; }
+        .total-count .count-item strong { display: block; font-size: 1.75rem; font-weight: 700; color: #1e40af; }
+        .error { color: #991b1b; margin-top: 1rem; background-color: #fee2e2; padding: 1rem; border-radius: 0.5rem; border: 1px solid #fca5a5; }
         .text-center-cell { text-align: center; }
         .text-left-cell { text-align: left; }
     </style>
@@ -137,19 +49,15 @@
 
         <div class="card">
             <div class="filter-container">
-                <input type="text" id="nameSearch" class="filter-input" placeholder="နာမည်ဖြင့် ရှာရန်..." onkeyup="applyFilters()">
-                
-                <select id="classFilter" class="filter-input" onChange="applyFilters()"><option value="">အတန်းအားလုံး</option></select>
-                <select id="schoolFilter" class="filter-input" onChange="applyFilters()"><option value="">ကျောင်းအားလုံး</option></select>
-                <select id="subjectCountFilter" class="filter-input" onChange="applyFilters()">
+                <input type="text" id="nameSearch" placeholder="နာမည်ဖြင့် ရှာရန်..." onkeyup="applyFilters()">
+                <select id="classFilter" onChange="applyFilters()"><option value="">အတန်းအားလုံး</option></select>
+                <select id="schoolFilter" onChange="applyFilters()"><option value="">ကျောင်းအားလုံး</option></select>
+                <select id="subjectCountFilter" onChange="applyFilters()">
                     <option value="">ဘာသာရပ် အရေအတွက်</option>
-                    <option value="4">၄ ဘာသာ</option>
-                    <option value="3">၃ ဘာသာ</option>
-                    <option value="2">၂ ဘာသာ</option>
-                    <option value="1">၁ ဘာသာ</option>
+                    <option value="4">၄ ဘာသာ</option> <option value="3">၃ ဘာသာ</option> <option value="2">၂ ဘာသာ</option> <option value="1">၁ ဘာသာ</option>
                     <option value="custom">ဘာသာရပ်ဖြင့်ရှာရန်</option>
                 </select>
-                <select id="customSubjectFilter" class="filter-input" style="display:none;" onChange="applyFilters()">
+                <select id="customSubjectFilter" style="display:none;" onChange="applyFilters()">
                     <option value="">ဘာသာရပ် ရွေးပါ</option>
                     <option value="P">ပါ</option><option value="TH">သီ</option><option value="N">ဏီ</option><option value="O">သစ်/ဟောင်း</option>
                 </select>
@@ -182,6 +90,18 @@
     <script>
         let allData = [];
 
+        const populateDropdownWithCount = (element, data, key) => {
+            const counts = data.reduce((acc, item) => {
+                const value = item[key];
+                if (value) acc[value] = (acc[value] || 0) + 1;
+                return acc;
+            }, {});
+            const sortedKeys = Object.keys(counts).sort();
+            sortedKeys.forEach(item => {
+                element.add(new Option(`${item} (${counts[item]} ပါး)`, item));
+            });
+        };
+
         const loadStudents = () => {
             const errorDiv = document.getElementById('errorMessage');
             const classFilter = document.getElementById('classFilter');
@@ -200,31 +120,13 @@
                                 console.error('CSV parsing errors:', result.errors);
                                 errorDiv.textContent = `CSV ဖိုင်ကို ဖတ်ရာတွင် အမှားအယွင်းများရှိနေပါသည်: ${result.errors[0].message}`;
                                 errorDiv.style.display = 'block';
-                                return;
                             }
                             allData = result.data.map(row => ({
                                 Name: row.Name || '', Class: row.Class || '', School: row.School || '',
                                 C_Num: row.C_Num || '', P: row.P || '', TH: row.TH || '', N: row.N || '', O: row.O || ''
                             }));
-
-                            const classCounts = allData.reduce((acc, student) => {
-                                if (student.Class) acc[student.Class] = (acc[student.Class] || 0) + 1;
-                                return acc;
-                            }, {});
-                            const schoolCounts = allData.reduce((acc, student) => {
-                                if (student.School) acc[student.School] = (acc[student.School] || 0) + 1;
-                                return acc;
-                            }, {});
-
-                            const sortedClasses = Object.keys(classCounts).sort();
-                            sortedClasses.forEach(cls => {
-                                classFilter.add(new Option(`${cls} (${classCounts[cls]} ပါး)`, cls));
-                            });
-                            const sortedSchools = Object.keys(schoolCounts).sort();
-                            sortedSchools.forEach(school => {
-                                schoolFilter.add(new Option(`${school} (${schoolCounts[school]} ပါး)`, school));
-                            });
-
+                            populateDropdownWithCount(classFilter, allData, 'Class');
+                            populateDropdownWithCount(schoolFilter, allData, 'School');
                             applyFilters();
                         },
                         error: (error) => {
@@ -242,7 +144,7 @@
         const applyFilters = () => {
             const tableBody = document.getElementById('studentBody');
             const totalCountDiv = document.getElementById('totalCount');
-            const nameSearchTerm = document.getElementById('nameSearch').value.trim();
+            const nameSearchValue = document.getElementById('nameSearch').value.toLowerCase();
             const classFilterValue = document.getElementById('classFilter').value;
             const schoolFilterValue = document.getElementById('schoolFilter').value;
             const subjectCountFilterValue = document.getElementById('subjectCountFilter').value;
@@ -250,7 +152,6 @@
             const customSubjectValue = customSubjectFilter.value;
 
             const filteredData = allData.filter(student => {
-                const nameMatch = student.Name.includes(nameSearchTerm);
                 const subjectCount = [student.P, student.TH, student.N, student.O].filter(Boolean).length;
                 let subjectMatch = true;
                 if (subjectCountFilterValue === 'custom' && customSubjectValue) {
@@ -258,8 +159,7 @@
                 } else if (subjectCountFilterValue && subjectCountFilterValue !== 'custom') {
                     subjectMatch = subjectCount === parseInt(subjectCountFilterValue);
                 }
-                
-                return nameMatch &&
+                return (!nameSearchValue || student.Name.toLowerCase().includes(nameSearchValue)) &&
                        (!classFilterValue || student.Class === classFilterValue) &&
                        (!schoolFilterValue || student.School === schoolFilterValue) &&
                        subjectMatch;
@@ -273,16 +173,30 @@
                 <div class="count-item"><span>သာမဏေ</span><strong>${novicesCount} ပါး</strong></div>`;
             
             tableBody.innerHTML = '';
-            const sortedData = classFilterValue 
-                ? [...filteredData].sort((a, b) => (parseInt(a.C_Num.replace(/\D/g,''), 10) || Infinity) - (parseInt(b.C_Num.replace(/\D/g,''), 10) || Infinity))
-                : filteredData;
+            
+            // **ပြင်ဆင်ထားသော Sorting Logic**
+            // ပထမဦးစွာ အတန်းအလိုက်စီပြီး၊ အတန်းတူပါက ခုံနံပါတ်အလိုက် ထပ်စီပါမည်။
+            const sortedData = [...filteredData].sort((a, b) => {
+                // အတန်းအမည်ရှေ့က ဂဏန်းကို ထုတ်ယူပါ
+                const classA = a.Class.split('-')[0];
+                const classB = b.Class.split('-')[0];
+
+                // အတန်းမတူပါက အတန်းနံပါတ်ဖြင့် စီပါ
+                if (classA !== classB) {
+                    return classA.localeCompare(classB);
+                }
+
+                // အတန်းတူပါက ခုံနံပါတ်ဖြင့် စီပါ
+                const numA = parseInt(a.C_Num.replace(/\D/g,''), 10) || Infinity;
+                const numB = parseInt(b.C_Num.replace(/\D/g,''), 10) || Infinity;
+                return numA - numB;
+            });
 
             if (sortedData.length === 0) {
                 tableBody.innerHTML = `<tr><td colspan="9" class="text-center text-gray-500 py-10">ရှာဖွေမှုနှင့် ကိုက်ညီသော အချက်အလက်များ မရှိပါ။</td></tr>`;
             } else {
                 sortedData.forEach((student, index) => {
                     const row = document.createElement('tr');
-                    // *** CORRECTED THIS LINE ***
                     row.innerHTML = `
                         <td class="text-left-cell text-gray-500">${index + 1}</td>
                         <td class="text-left-cell font-bold text-gray-700">${student.Name}</td>
@@ -302,13 +216,13 @@
 
         const copyTable = () => {
             const table = document.querySelector('table');
-            const classFilter = document.getElementById('classFilter').options[document.getElementById('classFilter').selectedIndex].text;
-            const schoolFilter = document.getElementById('schoolFilter').options[document.getElementById('schoolFilter').selectedIndex].text;
+            const classFilter = document.getElementById('classFilter').value;
+            const schoolFilter = document.getElementById('schoolFilter').value;
             const totalCountDiv = document.getElementById('totalCount');
             const total = totalCountDiv.querySelector('.count-item:nth-child(1) strong').textContent;
             const monks = totalCountDiv.querySelector('.count-item:nth-child(2) strong').textContent;
             const novices = totalCountDiv.querySelector('.count-item:nth-child(3) strong').textContent;
-            let text = `ညောင်တုန်းကျောင်းတိုက် သံဃာစာရင်း\nFilter: ${classFilter}, ${schoolFilter}\n`;
+            let text = `ညောင်တုန်းကျောင်းတိုက် သံဃာစာရင်း (${classFilter || 'အတန်းအားလုံး'}${schoolFilter ? ', ' + schoolFilter : ''})\n`;
             text += `စုစုပေါင်း: ${total}, ရဟန်း: ${monks}, သာမဏေ: ${novices}\n\n`;
             const headers = [...table.querySelectorAll('th')].map(th => th.textContent).join('\t');
             text += headers + '\n';
