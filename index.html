@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ညောင်တုန်းကျောင်းတိုက် သံဃာတော်များ</title>
-    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/png" href="logo.png">
     <script src="https://unpkg.com/papaparse@latest/papaparse.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -39,28 +39,16 @@
 </head>
 <body>
     <div class="container">
-       <div class="header">
-    <!-- Flex container for logos and title -->
-    <div class="flex justify-center items-center gap-6">
-        
-        <!-- Left Logo (using logo.png) -->
-        <img src="logo.png" alt="ကျောင်းတိုက် လိုဂို" class="h-16 w-16 object-contain">
-        
-        <!-- Title and Subtitle -->
-        <div class="text-center">
-            <h1 class="text-3xl font-bold text-gray-800">ပါဠိတက္ကသိုလ်ညောင်တုန်းကျောင်းတိုက်</h1>
-            <p class="text-lg text-gray-500 mt-1">၁၃၈၇ (၂၀၂၅) ခုနှစ် သံဃာစာရင်း</p>
+        <div class="header">
+            <div class="flex justify-center items-center gap-6">
+                <img src="logo.png" alt="ကျောင်းတိုက် လိုဂို" class="h-16 w-16 object-contain">
+                <div class="text-center">
+                    <h1 class="text-3xl font-bold text-gray-800">ပါဠိတက္ကသိုလ်ညောင်တုန်းကျောင်းတိုက်</h1>
+                    <p class="text-lg text-gray-500 mt-1">၁၃၈၇ (၂၀၂၅) ခုနှစ် သံဃာစာရင်း</p>
+                </div>
+                <img src="logo.png" alt="ကျောင်းတိုက် လိုဂို" class="h-16 w-16 object-contain">
+            </div>
         </div>
-        
-        <!-- Right Logo (also using logo.png) -->
-        <img src="logo.png" alt="ကျောင်းတိုက် လိုဂို" class="h-16 w-16 object-contain">
-        
-    </div>
-</div>
-
-    
-       
-
 
         <div class="card total-count" id="totalCount"></div>
 
@@ -118,6 +106,14 @@
             return String(num).split('').map(digit => burmeseNumerals[parseInt(digit)]).join('');
         };
 
+        // **Function အသစ်- ဂဏန်း Prefix ကို ဖြုတ်ရန်**
+        const formatDisplayName = (name) => {
+            if (typeof name !== 'string' || !name.includes('-')) {
+                return name; // စာသားမဟုတ်ရင် သို့မဟုတ် '-' မပါရင် မူရင်းအတိုင်းပြန်ပေး
+            }
+            return name.substring(name.indexOf('-') + 1);
+        };
+
         const populateDropdownWithCount = (element, data, key) => {
             const counts = data.reduce((acc, item) => {
                 const value = item[key];
@@ -129,9 +125,9 @@
                 element.remove(1);
             }
             sortedKeys.forEach(item => {
-                // Convert count to Burmese numerals before displaying
+                const displayName = formatDisplayName(item); // **ဂဏန်းဖြုတ်ပြီးမှ ပြပါ**
                 const burmeseCount = toBurmeseNumber(counts[item]);
-                element.add(new Option(`${item} (${burmeseCount} ပါး)`, item));
+                element.add(new Option(`${displayName} (${burmeseCount} ပါး)`, item)); // value ကတော့ မူရင်းအတိုင်းထား
             });
         };
 
@@ -162,6 +158,7 @@
         };
 
         const applyFilters = () => {
+            // ... (Filter logic remains the same) ...
             const nameSearchValue = document.getElementById('nameSearch').value.toLowerCase();
             const statusFilterValue = document.getElementById('statusFilter').value;
             const classFilterValue = document.getElementById('classFilter').value;
@@ -197,7 +194,6 @@
             const monksCount = presentStudentsForCount.filter(s => !s.Name.startsWith('ရှင်')).length;
             const novicesCount = presentStudentsForCount.filter(s => s.Name.startsWith('ရှင်')).length;
             
-            // Also convert numbers in the total count display
             document.getElementById('totalCount').innerHTML = `
                 <div class="count-item"><span>လက်ရှိ စုစုပေါင်း</span><strong>${toBurmeseNumber(presentStudentsForCount.length)} ပါး</strong></div>
                 <div class="count-item"><span>ရဟန်း</span><strong>${toBurmeseNumber(monksCount)} ပါး</strong></div>
@@ -223,11 +219,15 @@
                     if (student.Status.toLowerCase() === 'left') {
                         row.classList.add('transferred-student');
                     }
+                    // **ဇယားထဲမှာလည်း ဂဏန်းဖြုတ်ပြီးမှ ပြပါ**
+                    const displayClass = formatDisplayName(student.Class);
+                    const displaySchool = formatDisplayName(student.School);
+
                     row.innerHTML = `
                         <td class="text-left-cell">${toBurmeseNumber(index + 1)}</td>
                         <td class="text-left-cell font-bold">${student.Name}</td>
-                        <td class="text-left-cell">${student.Class}</td>
-                        <td class="text-left-cell">${student.School}</td>
+                        <td class="text-left-cell">${displayClass}</td>
+                        <td class="text-left-cell">${displaySchool}</td>
                         <td class="text-left-cell">${student.C_Num}</td>
                         <td class="text-center-cell">${student.P ? '✅' : '—'}</td>
                         <td class="text-center-cell">${student.TH ? '✅' : '—'}</td>
@@ -240,9 +240,7 @@
             customSubjectFilter.style.display = (subjectCountFilterValue === 'custom') ? 'inline-block' : 'none';
         };
 
-        const copyTable = () => {
-            // This function can be improved to copy based on the current view
-        };
+        const copyTable = () => { /* ... */ };
 
         window.onload = loadStudents;
     </script>
