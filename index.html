@@ -11,7 +11,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Pyidaungsu:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        /* --- ယခင် Style များအတိုင်း ထားရှိပါ --- */
+        /* --- Styles remain the same --- */
         body { font-family: 'Pyidaungsu', sans-serif; background-color: #f9fafb; color: #374151; }
         .container { max-width: 1280px; margin: auto; padding: 2rem; }
         .header { text-align: center; margin-bottom: 2rem; }
@@ -47,7 +47,7 @@
 </head>
 <body>
     <div class="container">
-        <!-- Header and Total Count sections remain the same -->
+        <!-- Header and Total Count sections -->
         <div class="header">
             <div class="flex justify-center items-center gap-6">
                 <img src="logo.png" alt="ကျောင်းတိုက် လိုဂို" class="h-16 w-16 object-contain">
@@ -77,18 +77,26 @@
             <button class="button button-danger" onclick="downloadCSV()">CSV ဖိုင်အသစ်ကို ဒေါင်းလုဒ်လုပ်ရန်</button>
         </div>
 
-        <!-- Filter section remains the same -->
+        <!-- Filter section -->
         <div class="card">
             <div class="filter-container">
                 <input type="text" id="nameSearch" placeholder="နာမည်ဖြင့် ရှာရန်..." onkeyup="applyFilters()">
                 <select id="statusFilter" onChange="applyFilters()"><option value="present">လက်ရှိရှိသူများ</option><option value="left">ထွက်သွားသူများ</option><option value="all">အားလုံး</option></select>
                 <select id="classFilter" onChange="applyFilters()"><option value="">အတန်းအားလုံး</option></select>
                 <select id="schoolFilter" onChange="applyFilters()"><option value="">ကျောင်းအားလုံး</option></select>
-                <!-- Other filters... -->
+                <select id="subjectCountFilter" onChange="applyFilters()">
+                    <option value="">ဘာသာရပ် အရေအတွက်</option>
+                    <option value="4">၄ ဘာသာ</option> <option value="3">၃ ဘာသာ</option> <option value="2">၂ ဘာသာ</option> <option value="1">၁ ဘာသာ</option>
+                    <option value="custom">ဘာသာရပ်ဖြင့်ရှာရန်</option>
+                </select>
+                <select id="customSubjectFilter" style="display:none;" onChange="applyFilters()">
+                    <option value="">ဘာသာရပ် ရွေးပါ</option>
+                    <option value="P">ပါ</option><option value="TH">သီ</option><option value="N">ဏီ</option><option value="O">သစ်/ဟောင်း</option>
+                </select>
             </div>
         </div>
 
-        <!-- Table container remains the same -->
+        <!-- Table container -->
         <div class="card table-container">
             <table>
                 <thead>
@@ -109,7 +117,7 @@
 
     <script>
         let allData = [];
-        // --- All helper functions (toBurmeseNumber, formatDisplayName, etc.) remain the same ---
+        // --- Helper functions ---
         const toBurmeseNumber = (num) => {
             const burmeseNumerals = ['၀', '၁', '၂', '၃', '၄', '၅', '၆', '၇', '၈', '၉'];
             return String(num).split('').map(digit => burmeseNumerals[parseInt(digit)]).join('');
@@ -145,6 +153,12 @@
                                 C_Num: row.C_Num || '', P: row.P || '', TH: row.TH || '', N: row.N || '', O: row.O || '',
                                 Status: row.Status || 'Present'
                             }));
+                            
+                            // **FIX: Repopulate dropdowns after data is loaded**
+                            const presentStudents = allData.filter(s => s.Status.toLowerCase() !== 'left');
+                            populateDropdownWithCount(document.getElementById('classFilter'), presentStudents, 'Class');
+                            populateDropdownWithCount(document.getElementById('schoolFilter'), presentStudents, 'School');
+
                             applyFilters(); // Initial display
                         }
                     });
@@ -152,23 +166,32 @@
         };
 
         const applyFilters = () => {
-            // --- This function remains largely the same ---
-            // It filters and displays data from the `allData` array.
-            // ... (filter logic as before) ...
             const nameSearchValue = document.getElementById('nameSearch').value.toLowerCase();
             const statusFilterValue = document.getElementById('statusFilter').value;
             const classFilterValue = document.getElementById('classFilter').value;
             const schoolFilterValue = document.getElementById('schoolFilter').value;
+            const subjectCountFilterValue = document.getElementById('subjectCountFilter').value;
+            const customSubjectFilter = document.getElementById('customSubjectFilter');
+            const customSubjectValue = customSubjectFilter.value;
 
             let filteredData = allData.filter(student => {
                 let statusMatch = true;
                 if (statusFilterValue === 'present') statusMatch = student.Status.toLowerCase() !== 'left';
                 else if (statusFilterValue === 'left') statusMatch = student.Status.toLowerCase() === 'left';
+
+                let subjectMatch = true;
+                if (subjectCountFilterValue === 'custom' && customSubjectValue) {
+                    subjectMatch = !!student[customSubjectValue];
+                } else if (subjectCountFilterValue && subjectCountFilterValue !== 'custom') {
+                    const subjectCount = [student.P, student.TH, student.N, student.O].filter(Boolean).length;
+                    subjectMatch = subjectCount === parseInt(subjectCountFilterValue);
+                }
                 
                 return statusMatch &&
                        (!nameSearchValue || student.Name.toLowerCase().includes(nameSearchValue)) &&
                        (!classFilterValue || student.Class === classFilterValue) &&
-                       (!schoolFilterValue || student.School === schoolFilterValue);
+                       (!schoolFilterValue || student.School === schoolFilterValue) &&
+                       subjectMatch;
             });
 
             const presentStudentsForCount = allData.filter(s => s.Status.toLowerCase() !== 'left');
@@ -214,16 +237,16 @@
                     tableBody.appendChild(row);
                 });
             }
+            // **FIX: Show/hide custom subject filter**
+            customSubjectFilter.style.display = (subjectCountFilterValue === 'custom') ? 'inline-block' : 'none';
         };
 
-        // --- NEW ADMIN FUNCTIONS ---
-
+        // --- ADMIN FUNCTIONS ---
         function showAdminLogin() {
             const password = prompt("Admin Password ကို ရိုက်ထည့်ပါ:");
-            // This is a simple, not very secure password check.
-            if (password === "Ashin@135") { // Change "admin123" to your desired password
+            if (password === "admin123") {
                 document.getElementById('adminPanel').style.display = 'block';
-            } else if (password !== null) { // User entered something but it was wrong
+            } else if (password !== null) {
                 alert("Password မှားယွင်းနေပါသည်။");
             }
         }
@@ -238,7 +261,7 @@
                 TH: document.getElementById('newTH').value,
                 N: document.getElementById('newN').value,
                 O: document.getElementById('newO').value,
-                Status: 'Present' // New students are always present
+                Status: 'Present'
             };
 
             if (!newStudent.Name || !newStudent.Class || !newStudent.School) {
@@ -246,8 +269,13 @@
                 return;
             }
 
-            allData.push(newStudent); // Add to the main data array
-            applyFilters(); // Refresh the table to show the new student
+            allData.push(newStudent);
+            applyFilters(); // Refresh the table
+            
+            // **FIX: Refresh dropdowns with new data**
+            const presentStudents = allData.filter(s => s.Status.toLowerCase() !== 'left');
+            populateDropdownWithCount(document.getElementById('classFilter'), presentStudents, 'Class');
+            populateDropdownWithCount(document.getElementById('schoolFilter'), presentStudents, 'School');
 
             // Clear the input fields
             document.getElementById('newName').value = '';
@@ -261,24 +289,19 @@
         }
 
         function downloadCSV() {
-            // Convert the `allData` array back to CSV format
-            const csvContent = Papa.unparse(allData, {
-                header: true // Include the header row
-            });
-
-            // Create a Blob from the CSV content
+            const csvContent = Papa.unparse(allData, { header: true });
             const blob = new Blob([`\uFEFF${csvContent}`], { type: 'text/csv;charset=utf-8;' });
-
-            // Create a link to trigger the download
             const link = document.createElement("a");
             const url = URL.createObjectURL(blob);
             link.setAttribute("href", url);
-            link.setAttribute("download", "students_updated.csv");
+            link.setAttribute("download", "students.csv"); // **FIX: Changed name to students.csv for easier replacement**
             link.style.visibility = 'hidden';
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
         }
+        
+        function copyTable() { /* ... */ };
 
         window.onload = loadStudents;
     </script>
