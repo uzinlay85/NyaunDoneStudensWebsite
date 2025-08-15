@@ -47,12 +47,13 @@
         .transferred-student td { color: #9ca3af; text-decoration: line-through; }
         .transferred-student:hover { background-color: #fef2f2 !important; }
         #adminPanel { background-color: #fffbeb; border: 1px solid #fde68a; padding: 1.5rem; border-radius: 0.75rem; margin-bottom: 1.5rem; }
-        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; }
+        .subject-checkboxes { display: flex; gap: 1rem; align-items: center; }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Header -->
+        <!-- Header and Total Count sections -->
         <div class="header">
             <div class="flex justify-center items-center gap-6">
                 <img src="logo.png" alt="ကျောင်းတိုက် လိုဂို" class="h-16 w-16 object-contain">
@@ -63,8 +64,6 @@
                 <img src="logo.png" alt="ကျောင်းတိုက် လိုဂို" class="h-16 w-16 object-contain">
             </div>
         </div>
-        
-        <!-- Total Count Display -->
         <div class="card total-count" id="totalCount"></div>
 
         <!-- Admin Panel (Initially Hidden) -->
@@ -72,17 +71,19 @@
             <h2 class="text-xl font-bold mb-4 text-yellow-800">Admin Panel</h2>
             <div class="form-grid mb-4">
                 <input type="text" id="studentName" placeholder="နာမည်">
-                <input type="text" id="studentClass" placeholder="အတန်း (e.g., ၀၅-အကြီးတန်း)">
-                <input type="text" id="studentSchool" placeholder="ကျောင်း (e.g., ၀၂-လှ)">
+                <select id="studentClass"><option value="">အတန်း ရွေးပါ</option></select>
+                <select id="studentSchool"><option value="">ကျောင်း ရွေးပါ</option></select>
                 <input type="text" id="studentCNum" placeholder="ခုံနံပါတ်">
-                <input type="text" id="studentP" placeholder="ပါ (e.g., ပါ)">
-                <input type="text" id="studentTH" placeholder="သီ (e.g., သီ)">
-                <input type="text" id="studentN" placeholder="ဏီ (e.g., ဏီ)">
-                <input type="text" id="studentO" placeholder="သစ်/ဟောင်း (e.g., ဟ)">
                 <select id="studentStatus">
                     <option value="Present">Present</option>
                     <option value="Left">Left</option>
                 </select>
+            </div>
+            <div class="subject-checkboxes mb-4">
+                <label><input type="checkbox" id="studentP" value="ပါ"> ပါ</label>
+                <label><input type="checkbox" id="studentTH" value="သီ"> သီ</label>
+                <label><input type="checkbox" id="studentN" value="ဏီ"> ဏီ</label>
+                <label><input type="checkbox" id="studentO" value="ဟ"> သစ်/ဟောင်း</label>
             </div>
             <div class="flex gap-4">
                 <button class="button button-primary" onclick="addStudent()">ကျောင်းသားသစ်ထည့်မည်</button>
@@ -210,7 +211,6 @@
                        subjectMatch;
             });
 
-            // **FIX 1: Count based on the filteredData, not allData**
             const monksCount = filteredData.filter(s => !s.Name.startsWith('ရှင်')).length;
             const novicesCount = filteredData.filter(s => s.Name.startsWith('ရှင်')).length;
             
@@ -234,7 +234,7 @@
             if (sortedData.length === 0) {
                 tableBody.innerHTML = `<tr><td colspan="10" class="text-center text-gray-500 py-10">ရှာဖွေမှုနှင့် ကိုက်ညီသော အချက်အလက်များ မရှိပါ။</td></tr>`;
             } else {
-                sortedData.forEach((student, index) => { // **FIX 2: Use the index from the sortedData.forEach loop**
+                sortedData.forEach((student, index) => {
                     const originalIndex = allData.findIndex(s => s === student);
                     const row = document.createElement('tr');
                     if (student.Status.toLowerCase() === 'left') row.classList.add('transferred-student');
@@ -280,6 +280,25 @@
         }
 
         // --- ADMIN FUNCTIONS ---
+        function populateAdminDropdowns() {
+            const classDropdown = document.getElementById('studentClass');
+            const schoolDropdown = document.getElementById('studentSchool');
+            
+            const uniqueClasses = [...new Set(allData.map(s => s.Class).filter(Boolean))].sort();
+            const uniqueSchools = [...new Set(allData.map(s => s.School).filter(Boolean))].sort();
+
+            // Clear existing options except the first one
+            while (classDropdown.options.length > 1) classDropdown.remove(1);
+            while (schoolDropdown.options.length > 1) schoolDropdown.remove(1);
+
+            uniqueClasses.forEach(cls => {
+                classDropdown.add(new Option(formatDisplayName(cls), cls));
+            });
+            uniqueSchools.forEach(school => {
+                schoolDropdown.add(new Option(formatDisplayName(school), school));
+            });
+        }
+
         function showAdminLogin() {
             if (isAdmin) {
                 isAdmin = false;
@@ -292,6 +311,7 @@
             if (password === "admin123") {
                 isAdmin = true;
                 document.getElementById('adminPanel').style.display = 'block';
+                populateAdminDropdowns();
                 applyFilters();
             } else if (password !== null) {
                 alert("Password မှားယွင်းနေပါသည်။");
@@ -303,26 +323,30 @@
             document.getElementById('studentClass').value = '';
             document.getElementById('studentSchool').value = '';
             document.getElementById('studentCNum').value = '';
-            document.getElementById('studentP').value = '';
-            document.getElementById('studentTH').value = '';
-            document.getElementById('studentN').value = '';
-            document.getElementById('studentO').value = '';
             document.getElementById('studentStatus').value = 'Present';
+            document.getElementById('studentP').checked = false;
+            document.getElementById('studentTH').checked = false;
+            document.getElementById('studentN').checked = false;
+            document.getElementById('studentO').checked = false;
             document.getElementById('editingIndex').value = '';
         }
 
-        function addStudent() {
-            const newStudent = {
+        function getStudentDataFromForm() {
+            return {
                 Name: document.getElementById('studentName').value,
                 Class: document.getElementById('studentClass').value,
                 School: document.getElementById('studentSchool').value,
                 C_Num: document.getElementById('studentCNum').value,
-                P: document.getElementById('studentP').value,
-                TH: document.getElementById('studentTH').value,
-                N: document.getElementById('studentN').value,
-                O: document.getElementById('studentO').value,
+                P: document.getElementById('studentP').checked ? document.getElementById('studentP').value : '',
+                TH: document.getElementById('studentTH').checked ? document.getElementById('studentTH').value : '',
+                N: document.getElementById('studentN').checked ? document.getElementById('studentN').value : '',
+                O: document.getElementById('studentO').checked ? document.getElementById('studentO').value : '',
                 Status: document.getElementById('studentStatus').value
             };
+        }
+
+        function addStudent() {
+            const newStudent = getStudentDataFromForm();
             if (!newStudent.Name || !newStudent.Class || !newStudent.School) {
                 alert("နာမည်၊ အတန်း၊ နှင့် ကျောင်း အချက်အလက်များ လိုအပ်ပါသည်။");
                 return;
@@ -341,11 +365,11 @@
             document.getElementById('studentClass').value = student.Class;
             document.getElementById('studentSchool').value = student.School;
             document.getElementById('studentCNum').value = student.C_Num;
-            document.getElementById('studentP').value = student.P;
-            document.getElementById('studentTH').value = student.TH;
-            document.getElementById('studentN').value = student.N;
-            document.getElementById('studentO').value = student.O;
             document.getElementById('studentStatus').value = student.Status;
+            document.getElementById('studentP').checked = !!student.P;
+            document.getElementById('studentTH').checked = !!student.TH;
+            document.getElementById('studentN').checked = !!student.N;
+            document.getElementById('studentO').checked = !!student.O;
             document.getElementById('editingIndex').value = index;
             window.scrollTo(0, 0);
         }
@@ -356,17 +380,7 @@
                 alert("ပြင်ဆင်ရန် ကျောင်းသားတစ်ဦးကို ရွေးချယ်ထားခြင်းမရှိပါ။ 'ပြင်ရန်' ခလုတ်ကို အရင်နှိပ်ပါ။");
                 return;
             }
-            allData[index] = {
-                Name: document.getElementById('studentName').value,
-                Class: document.getElementById('studentClass').value,
-                School: document.getElementById('studentSchool').value,
-                C_Num: document.getElementById('studentCNum').value,
-                P: document.getElementById('studentP').value,
-                TH: document.getElementById('studentTH').value,
-                N: document.getElementById('studentN').value,
-                O: document.getElementById('studentO').value,
-                Status: document.getElementById('studentStatus').value
-            };
+            allData[index] = getStudentDataFromForm();
             applyFilters();
             const presentStudents = allData.filter(s => s.Status.toLowerCase() !== 'left');
             populateDropdownWithCount(document.getElementById('classFilter'), presentStudents, 'Class');
