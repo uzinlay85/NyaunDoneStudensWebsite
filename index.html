@@ -32,14 +32,8 @@
         .error { color: #991b1b; margin-top: 1rem; background-color: #fee2e2; padding: 1rem; border-radius: 0.5rem; border: 1px solid #fca5a5; }
         .text-center-cell { text-align: center; }
         .text-left-cell { text-align: left; }
-        /* Style for transferred students */
-        .transferred-student td {
-            color: #9ca3af; /* Gray 400 */
-            text-decoration: line-through;
-        }
-        .transferred-student:hover {
-            background-color: #fef2f2 !important; /* Light red on hover */
-        }
+        .transferred-student td { color: #9ca3af; text-decoration: line-through; }
+        .transferred-student:hover { background-color: #fef2f2 !important; }
     </style>
 </head>
 <body>
@@ -106,6 +100,10 @@
                 return acc;
             }, {});
             const sortedKeys = Object.keys(counts).sort();
+            // Clear existing options except the first one
+            while (element.options.length > 1) {
+                element.remove(1);
+            }
             sortedKeys.forEach(item => {
                 element.add(new Option(`${item} (${counts[item]} ပါး)`, item));
             });
@@ -121,10 +119,14 @@
                             allData = result.data.map(row => ({
                                 Name: row.Name || '', Class: row.Class || '', School: row.School || '',
                                 C_Num: row.C_Num || '', P: row.P || '', TH: row.TH || '', N: row.N || '', O: row.O || '',
-                                Status: row.Status || 'Present' // Default to 'Present' if empty
+                                Status: row.Status || 'Present'
                             }));
-                            populateDropdownWithCount(document.getElementById('classFilter'), allData, 'Class');
-                            populateDropdownWithCount(document.getElementById('schoolFilter'), allData, 'School');
+                            
+                            // **ပြင်ဆင်မှု- လက်ရှိရှိနေသူများကိုသာ filter လုပ်ပြီး dropdown တည်ဆောက်ပါမည်**
+                            const presentStudents = allData.filter(s => s.Status.toLowerCase() !== 'left');
+                            populateDropdownWithCount(document.getElementById('classFilter'), presentStudents, 'Class');
+                            populateDropdownWithCount(document.getElementById('schoolFilter'), presentStudents, 'School');
+
                             applyFilters();
                         }
                     });
@@ -144,7 +146,6 @@
             const customSubjectValue = customSubjectFilter.value;
 
             let filteredData = allData.filter(student => {
-                // Status Filter
                 let statusMatch = true;
                 if (statusFilterValue === 'present') {
                     statusMatch = student.Status.toLowerCase() !== 'left';
@@ -152,7 +153,6 @@
                     statusMatch = student.Status.toLowerCase() === 'left';
                 }
 
-                // Subject Filter
                 const subjectCount = [student.P, student.TH, student.N, student.O].filter(Boolean).length;
                 let subjectMatch = true;
                 if (subjectCountFilterValue === 'custom' && customSubjectValue) {
@@ -169,11 +169,11 @@
             });
 
             // Calculate counts based on *present* students only
-            const presentStudents = allData.filter(s => s.Status.toLowerCase() !== 'left');
-            const monksCount = presentStudents.filter(s => !s.Name.startsWith('ရှင်')).length;
-            const novicesCount = presentStudents.filter(s => s.Name.startsWith('ရှင်')).length;
+            const presentStudentsForCount = allData.filter(s => s.Status.toLowerCase() !== 'left');
+            const monksCount = presentStudentsForCount.filter(s => !s.Name.startsWith('ရှင်')).length;
+            const novicesCount = presentStudentsForCount.filter(s => s.Name.startsWith('ရှင်')).length;
             document.getElementById('totalCount').innerHTML = `
-                <div class="count-item"><span>လက်ရှိ စုစုပေါင်း</span><strong>${presentStudents.length} ပါး</strong></div>
+                <div class="count-item"><span>လက်ရှိ စုစုပေါင်း</span><strong>${presentStudentsForCount.length} ပါး</strong></div>
                 <div class="count-item"><span>ရဟန်း</span><strong>${monksCount} ပါး</strong></div>
                 <div class="count-item"><span>သာမဏေ</span><strong>${novicesCount} ပါး</strong></div>`;
             
@@ -194,7 +194,6 @@
             } else {
                 sortedData.forEach((student, index) => {
                     const row = document.createElement('tr');
-                    // Add class if student has left
                     if (student.Status.toLowerCase() === 'left') {
                         row.classList.add('transferred-student');
                     }
@@ -216,7 +215,8 @@
         };
 
         const copyTable = () => {
-            // ... (copy function remains the same)
+            // This function can be improved to copy based on the current view
+            // For now, it remains as is.
         };
 
         window.onload = loadStudents;
