@@ -52,7 +52,7 @@
 </head>
 <body>
     <div class="container">
-        <!-- Header and Total Count sections -->
+        <!-- Header -->
         <div class="header">
             <div class="flex justify-center items-center gap-6">
                 <img src="logo.png" alt="ကျောင်းတိုက် လိုဂို" class="h-16 w-16 object-contain">
@@ -63,6 +63,8 @@
                 <img src="logo.png" alt="ကျောင်းတိုက် လိုဂို" class="h-16 w-16 object-contain">
             </div>
         </div>
+        
+        <!-- Total Count Display -->
         <div class="card total-count" id="totalCount"></div>
 
         <!-- Admin Panel (Initially Hidden) -->
@@ -134,10 +136,10 @@
         let allData = [];
         let isAdmin = false;
 
-        // --- Helper functions (toBurmeseNumber, etc.) ---
+        // --- Helper functions ---
         const toBurmeseNumber = (num) => {
             const burmeseNumerals = ['၀', '၁', '၂', '၃', '၄', '၅', '၆', '၇', '၈', '၉'];
-            return String(num).split('').map(digit => burmeseNumerals[parseInt(digit)]).join('');
+            return String(num).split('').map(digit => burmeseNumerals[parseInt(digit)] || '').join('');
         };
         const formatDisplayName = (name) => {
             if (typeof name !== 'string' || !name.includes('-')) return name;
@@ -180,7 +182,6 @@
         };
 
         const applyFilters = () => {
-            // ... (Filter logic remains the same) ...
             const nameSearchValue = document.getElementById('nameSearch').value.toLowerCase();
             const statusFilterValue = document.getElementById('statusFilter').value;
             const classFilterValue = document.getElementById('classFilter').value;
@@ -209,12 +210,12 @@
                        subjectMatch;
             });
 
-            const presentStudentsForCount = allData.filter(s => s.Status.toLowerCase() !== 'left');
-            const monksCount = presentStudentsForCount.filter(s => !s.Name.startsWith('ရှင်')).length;
-            const novicesCount = presentStudentsForCount.filter(s => s.Name.startsWith('ရှင်')).length;
+            // **FIX 1: Count based on the filteredData, not allData**
+            const monksCount = filteredData.filter(s => !s.Name.startsWith('ရှင်')).length;
+            const novicesCount = filteredData.filter(s => s.Name.startsWith('ရှင်')).length;
             
             document.getElementById('totalCount').innerHTML = `
-                <div class="count-item"><span>လက်ရှိ စုစုပေါင်း</span><strong>${toBurmeseNumber(presentStudentsForCount.length)} ပါး</strong></div>
+                <div class="count-item"><span>လက်ရှိ စုစုပေါင်း</span><strong>${toBurmeseNumber(filteredData.length)} ပါး</strong></div>
                 <div class="count-item"><span>ရဟန်း</span><strong>${toBurmeseNumber(monksCount)} ပါး</strong></div>
                 <div class="count-item"><span>သာမဏေ</span><strong>${toBurmeseNumber(novicesCount)} ပါး</strong></div>`;
             
@@ -233,7 +234,7 @@
             if (sortedData.length === 0) {
                 tableBody.innerHTML = `<tr><td colspan="10" class="text-center text-gray-500 py-10">ရှာဖွေမှုနှင့် ကိုက်ညီသော အချက်အလက်များ မရှိပါ။</td></tr>`;
             } else {
-                sortedData.forEach((student) => {
+                sortedData.forEach((student, index) => { // **FIX 2: Use the index from the sortedData.forEach loop**
                     const originalIndex = allData.findIndex(s => s === student);
                     const row = document.createElement('tr');
                     if (student.Status.toLowerCase() === 'left') row.classList.add('transferred-student');
@@ -250,7 +251,7 @@
                             </td>`;
                     }
                     row.innerHTML = `
-                        <td class="text-left-cell">${toBurmeseNumber(allData.indexOf(student) + 1)}</td>
+                        <td class="text-left-cell">${toBurmeseNumber(index + 1)}</td>
                         <td class="text-left-cell font-bold">${student.Name}</td>
                         <td class="text-left-cell">${displayClass}</td>
                         <td class="text-left-cell">${displaySchool}</td>
@@ -283,14 +284,15 @@
             if (isAdmin) {
                 isAdmin = false;
                 document.getElementById('adminPanel').style.display = 'none';
-                applyFilters(); // Re-render table without action buttons
+                clearAdminForm();
+                applyFilters();
                 return;
             }
             const password = prompt("Admin Password ကို ရိုက်ထည့်ပါ:");
             if (password === "admin123") {
                 isAdmin = true;
                 document.getElementById('adminPanel').style.display = 'block';
-                applyFilters(); // Re-render table with action buttons
+                applyFilters();
             } else if (password !== null) {
                 alert("Password မှားယွင်းနေပါသည်။");
             }
@@ -345,7 +347,7 @@
             document.getElementById('studentO').value = student.O;
             document.getElementById('studentStatus').value = student.Status;
             document.getElementById('editingIndex').value = index;
-            window.scrollTo(0, 0); // Scroll to top to see the form
+            window.scrollTo(0, 0);
         }
 
         function updateStudent() {
