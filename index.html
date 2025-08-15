@@ -222,10 +222,19 @@
             const tableBody = document.getElementById('studentBody');
             tableBody.innerHTML = '';
             
+            // **MODIFIED SORTING LOGIC**
             const sortedData = [...filteredData].sort((a, b) => {
+                // 1. Sort by School first
+                const schoolA = a.School.split('-')[0];
+                const schoolB = b.School.split('-')[0];
+                if (schoolA !== schoolB) return schoolA.localeCompare(schoolB);
+
+                // 2. Then by Class
                 const classA = a.Class.split('-')[0];
                 const classB = b.Class.split('-')[0];
                 if (classA !== classB) return classA.localeCompare(classB);
+
+                // 3. Finally by Seat Number
                 const numA = parseInt(a.C_Num.replace(/\D/g,''), 10) || Infinity;
                 const numB = parseInt(b.C_Num.replace(/\D/g,''), 10) || Infinity;
                 return numA - numB;
@@ -287,7 +296,6 @@
             const uniqueClasses = [...new Set(allData.map(s => s.Class).filter(Boolean))].sort();
             const uniqueSchools = [...new Set(allData.map(s => s.School).filter(Boolean))].sort();
 
-            // Clear existing options except the first one
             while (classDropdown.options.length > 1) classDropdown.remove(1);
             while (schoolDropdown.options.length > 1) schoolDropdown.remove(1);
 
@@ -308,7 +316,7 @@
                 return;
             }
             const password = prompt("Admin Password ကို ရိုက်ထည့်ပါ:");
-            if (password === "Ashin@135") {
+            if (password === "admin123") {
                 isAdmin = true;
                 document.getElementById('adminPanel').style.display = 'block';
                 populateAdminDropdowns();
