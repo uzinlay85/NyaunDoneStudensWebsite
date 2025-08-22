@@ -25,16 +25,29 @@
         input[type="text"], select { background-color: #ffffff; border: 1px solid #d1d5db; border-radius: 0.5rem; padding: 0.6rem 1rem; color: #374151; transition: border-color 0.2s, box-shadow 0.2s; font-family: 'Pyidaungsu', sans-serif; }
         input[type="text"]:focus, select:focus { outline: none; border-color: #60a5fa; box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.3); }
         .button { padding: 0.75rem 1.5rem; border: none; border-radius: 0.5rem; cursor: pointer; font-weight: 700; transition: background-color 0.2s, transform 0.1s; }
+        .button-sm { padding: 0.4rem 0.8rem; font-size: 0.8rem; }
         .button-primary { background-color: #3b82f6; color: white; }
         .button-primary:hover { background-color: #2563eb; }
         .button-secondary { background-color: #6b7280; color: white; }
         .button-secondary:hover { background-color: #4b5563; }
+        .button-warning { background-color: #f59e0b; color: white; }
+        .button-warning:hover { background-color: #d97706; }
+        .button-danger { background-color: #ef4444; color: white; }
+        .button-danger:hover { background-color: #dc2626; }
         .button-clear { background-color: transparent; color: #6b7280; border: 1px solid #d1d5db; padding: 0.6rem 1rem; }
         .button-clear:hover { background-color: #f3f4f6; }
+        .button:active { transform: scale(0.98); }
         .total-count { display: flex; justify-content: space-around; text-align: center; }
         .total-count .count-item span { font-size: 0.9rem; color: #6b7280; }
         .total-count .count-item strong { display: block; font-size: 1.75rem; font-weight: 700; color: #1e40af; }
         .error { color: #991b1b; margin-top: 1rem; background-color: #fee2e2; padding: 1rem; border-radius: 0.5rem; border: 1px solid #fca5a5; }
+        .text-center-cell { text-align: center; }
+        .text-left-cell { text-align: left; }
+        .transferred-student td { color: #9ca3af; text-decoration: line-through; }
+        .transferred-student:hover { background-color: #fef2f2 !important; }
+        #adminPanel { background-color: #fffbeb; border: 1px solid #fde68a; padding: 1.5rem; border-radius: 0.75rem; margin-bottom: 1.5rem; }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; }
+        .subject-checkboxes { display: flex; gap: 1rem; align-items: center; }
     </style>
 </head>
 <body>
@@ -62,9 +75,47 @@
         
         <div class="card total-count" id="totalCount"></div>
 
+        <div id="adminPanel" style="display: none;">
+            <h2 class="text-xl font-bold mb-4 text-yellow-800">Admin Panel</h2>
+            <div class="form-grid mb-4">
+                <input type="text" id="studentName" placeholder="နာမည်">
+                <select id="studentClass"><option value="">အတန်း ရွေးပါ</option></select>
+                <select id="studentSchool"><option value="">ကျောင်း ရွေးပါ</option></select>
+                <input type="text" id="studentCNum" placeholder="ခုံနံပါတ်">
+                <select id="studentStatus">
+                    <option value="Present">Present</option>
+                    <option value="Left">Left</option>
+                </select>
+            </div>
+            <div class="subject-checkboxes mb-4">
+                <label><input type="checkbox" id="studentP" value="ပါ"> ပါ</label>
+                <label><input type="checkbox" id="studentTH" value="သီ"> သီ</label>
+                <label><input type="checkbox" id="studentN" value="ဏီ"> ဏီ</label>
+                <label><input type="checkbox" id="studentO" value="ဟ"> သစ်/ဟောင်း</label>
+            </div>
+            <div class="flex gap-4">
+                <button class="button button-primary" onclick="addStudent()">ကျောင်းသားသစ်ထည့်မည်</button>
+                <button class="button button-warning" onclick="updateStudent()">ကျောင်းသားပြင်ဆင်မည်</button>
+                <button class="button button-danger ml-auto" onclick="downloadCSV()">CSV ဖိုင်အသစ်ကို ဒေါင်းလုဒ်လုပ်ရန်</button>
+            </div>
+            <input type="hidden" id="editingIndex">
+        </div>
+
         <div class="card">
             <div class="filter-container">
                 <input type="text" id="nameSearch" placeholder="နာမည်ဖြင့် ရှာရန်..." onkeyup="applyFilters()">
+                <select id="statusFilter" onChange="applyFilters()"><option value="present">လက်ရှိရှိသူများ</option><option value="left">ထွက်သွားသူများ</option><option value="all">အားလုံး</option></select>
+                <select id="classFilter" onChange="applyFilters()"><option value="">အတန်းအားလုံး</option></select>
+                <select id="schoolFilter" onChange="applyFilters()"><option value="">ကျောင်းအားလုံး</option></select>
+                <select id="subjectCountFilter" onChange="applyFilters()">
+                    <option value="">ဘာသာရပ် အရေအတွက်</option>
+                    <option value="4">၄ ဘာသာ</option> <option value="3">၃ ဘာသာ</option> <option value="2">၂ ဘာသာ</option> <option value="1">၁ ဘာသာ</option>
+                    <option value="custom">ဘာသာရပ်ဖြင့်ရှာရန်</option>
+                </select>
+                <select id="customSubjectFilter" style="display:none;" onChange="applyFilters()">
+                    <option value="">ဘာသာရပ် ရွေးပါ</option>
+                    <option value="P">ပါ</option><option value="TH">သီ</option><option value="N">ဏီ</option><option value="O">သစ်/ဟောင်း</option>
+                </select>
                 <button class="button button-clear ml-auto" onclick="clearFilters()">ရှင်းလင်းမည်</button>
             </div>
         </div>
@@ -73,7 +124,8 @@
             <table id="mainTable">
                 <thead>
                     <tr>
-                        <th>စဉ်</th><th>နာမည်</th><th>အတန်း</th><th>ကျောင်း</th><th>ခုံနံပါတ်</th>
+                        <th>စဉ်</th><th>နာမည်</th><th>အတန်း</th><th>ကျောင်း</th><th>ခုံနံပါတ်</th><th>ပါ</th><th>သီ</th><th>ဏီ</th><th>သစ်/ဟောင်း</th>
+                        <th id="actionsHeader" style="display:none;">လုပ်ဆောင်ချက်</th>
                     </tr>
                 </thead>
                 <tbody id="studentBody"></tbody>
@@ -103,12 +155,27 @@
             return name.substring(name.indexOf('-') + 1);
         };
 
+        const populateDropdownWithCount = (element, data, key) => {
+            const counts = data.reduce((acc, item) => {
+                const value = item[key];
+                if (value) acc[value] = (acc[value] || 0) + 1;
+                return acc;
+            }, {});
+            const sortedKeys = Object.keys(counts).sort();
+            while (element.options.length > 1) element.remove(1);
+            sortedKeys.forEach(item => {
+                const displayName = formatDisplayName(item);
+                const burmeseCount = toBurmeseNumber(counts[item]);
+                element.add(new Option(`${displayName} (${burmeseCount} ပါး)`, item));
+            });
+        };
+
         const loadStudents = (year) => {
             document.getElementById('yearSubtitle').textContent = `${toBurmeseNumber(year)} ခုနှစ် သံဃာစာရင်း`;
             allData = [];
             clearFilters();
             const tableBody = document.getElementById('studentBody');
-            tableBody.innerHTML = `<tr><td colspan="5" class="text-center text-gray-500 py-10">ဒေတာများကို တင်နေသည်...</td></tr>`;
+            tableBody.innerHTML = `<tr><td colspan="10" class="text-center text-gray-500 py-10">ဒေတာများကို တင်နေသည်...</td></tr>`;
             const errorDiv = document.getElementById('errorMessage');
             errorDiv.style.display = 'none';
 
@@ -127,11 +194,13 @@
                         skipEmptyLines: true,
                         complete: (result) => {
                             allData = result.data.map(row => ({
-                                Name: row.Name || '',
-                                Class: row.Class || '',
-                                School: row.School || '',
-                                C_Num: row.C_Num || ''
+                                Name: row.Name || '', Class: row.Class || '', School: row.School || '',
+                                C_Num: row.C_Num || '', P: row.P || '', TH: row.TH || '', N: row.N || '', O: row.O || '',
+                                Status: row.Status || 'Present'
                             }));
+                            const presentStudents = allData.filter(s => s.Status.toLowerCase() !== 'left');
+                            populateDropdownWithCount(document.getElementById('classFilter'), presentStudents, 'Class');
+                            populateDropdownWithCount(document.getElementById('schoolFilter'), presentStudents, 'School');
                             applyFilters();
                         }
                     });
@@ -139,17 +208,39 @@
                 .catch(error => {
                     errorDiv.textContent = error.message;
                     errorDiv.style.display = 'block';
-                    tableBody.innerHTML = `<tr><td colspan="5" class="text-center text-red-500 py-10">${error.message}</td></tr>`;
+                    tableBody.innerHTML = `<tr><td colspan="10" class="text-center text-red-500 py-10">${error.message}</td></tr>`;
                     document.getElementById('totalCount').innerHTML = '';
                 });
         };
 
         const applyFilters = () => {
             const nameSearchValue = document.getElementById('nameSearch').value.toLowerCase();
-            
-            let filteredData = allData.filter(student => 
-                !nameSearchValue || student.Name.toLowerCase().includes(nameSearchValue)
-            );
+            const statusFilterValue = document.getElementById('statusFilter').value;
+            const classFilterValue = document.getElementById('classFilter').value;
+            const schoolFilterValue = document.getElementById('schoolFilter').value;
+            const subjectCountFilterValue = document.getElementById('subjectCountFilter').value;
+            const customSubjectFilter = document.getElementById('customSubjectFilter');
+            const customSubjectValue = customSubjectFilter.value;
+
+            let filteredData = allData.filter(student => {
+                let statusMatch = true;
+                if (statusFilterValue === 'present') statusMatch = student.Status.toLowerCase() !== 'left';
+                else if (statusFilterValue === 'left') statusMatch = student.Status.toLowerCase() === 'left';
+
+                let subjectMatch = true;
+                if (subjectCountFilterValue === 'custom' && customSubjectValue) {
+                    subjectMatch = !!student[customSubjectValue];
+                } else if (subjectCountFilterValue && subjectCountFilterValue !== 'custom') {
+                    const subjectCount = [student.P, student.TH, student.N, student.O].filter(Boolean).length;
+                    subjectMatch = subjectCount === parseInt(subjectCountFilterValue);
+                }
+                
+                return statusMatch &&
+                       (!nameSearchValue || student.Name.toLowerCase().includes(nameSearchValue)) &&
+                       (!classFilterValue || student.Class === classFilterValue) &&
+                       (!schoolFilterValue || student.School === schoolFilterValue) &&
+                       subjectMatch;
+            });
 
             currentViewData = [...filteredData].sort((a, b) => {
                 const schoolA = a.School.split('-')[0];
@@ -165,26 +256,45 @@
 
             renderTable(currentViewData);
             updateCounts(currentViewData);
+            customSubjectFilter.style.display = (subjectCountFilterValue === 'custom') ? 'inline-block' : 'none';
         };
 
         const renderTable = (data) => {
             const tableBody = document.getElementById('studentBody');
             tableBody.innerHTML = '';
             if (data.length === 0) {
-                tableBody.innerHTML = `<tr><td colspan="5" class="text-center text-gray-500 py-10">ရှာဖွေမှုနှင့် ကိုက်ညီသော အချက်အလက်များ မရှိပါ။</td></tr>`;
+                tableBody.innerHTML = `<tr><td colspan="10" class="text-center text-gray-500 py-10">ရှာဖွေမှုနှင့် ကိုက်ညီသော အချက်အလက်များ မရှိပါ။</td></tr>`;
                 return;
             }
             data.forEach((student, index) => {
+                const originalIndex = allData.findIndex(s => s === student);
                 const row = document.createElement('tr');
+                if (student.Status.toLowerCase() === 'left') row.classList.add('transferred-student');
+                let actionsCell = '';
+                if (isAdmin) {
+                    actionsCell = `
+                        <td class="text-center-cell">
+                            <div class="flex gap-2 justify-center">
+                                <button class="button button-sm button-warning" onclick="editStudent(${originalIndex})">ပြင်ရန်</button>
+                                <button class="button button-sm button-danger" onclick="deleteStudent(${originalIndex})">ဖျက်ရန်</button>
+                            </div>
+                        </td>`;
+                }
                 row.innerHTML = `
                     <td>${toBurmeseNumber(index + 1)}</td>
                     <td>${student.Name}</td>
                     <td>${formatDisplayName(student.Class)}</td>
                     <td>${formatDisplayName(student.School)}</td>
                     <td>${student.C_Num}</td>
+                    <td class="text-center-cell">${student.P ? '✅' : '—'}</td>
+                    <td class="text-center-cell">${student.TH ? '✅' : '—'}</td>
+                    <td class="text-center-cell">${student.N ? '✅' : '—'}</td>
+                    <td class="text-center-cell">${student.O ? '✅' : '—'}</td>
+                    ${actionsCell}
                 `;
                 tableBody.appendChild(row);
             });
+            document.getElementById('actionsHeader').style.display = isAdmin ? '' : 'none';
         };
 
         const updateCounts = (data) => {
@@ -199,6 +309,11 @@
 
         const clearFilters = () => {
             document.getElementById('nameSearch').value = '';
+            document.getElementById('statusFilter').value = 'present';
+            document.getElementById('classFilter').value = '';
+            document.getElementById('schoolFilter').value = '';
+            document.getElementById('subjectCountFilter').value = '';
+            document.getElementById('customSubjectFilter').value = '';
             applyFilters();
         };
 
@@ -212,7 +327,7 @@
             let text = `${toBurmeseNumber(year)} ခုနှစ်၊ ညောင်တုန်းကျောင်းတိုက် သံဃာစာရင်း\n`;
             text += `(စုစုပေါင်း: ${total}, ရဟန်း: ${monks}, သာမဏေ: ${novices})\n\n`;
             
-            const headers = ["စဉ်", "နာမည်", "အတန်း", "ကျောင်း", "ခုံနံပါတ်"];
+            const headers = ["စဉ်", "နာမည်", "အတန်း", "ကျောင်း", "ခုံနံပါတ်", "ပါ", "သီ", "ဏီ", "သစ်/ဟောင်း"];
             text += headers.join('\t') + '\n';
             
             currentViewData.forEach((student, index) => {
@@ -221,7 +336,11 @@
                     student.Name,
                     formatDisplayName(student.Class),
                     formatDisplayName(student.School),
-                    student.C_Num
+                    student.C_Num,
+                    student.P ? 'Yes' : 'No',
+                    student.TH ? 'Yes' : 'No',
+                    student.N ? 'Yes' : 'No',
+                    student.O ? 'Yes' : 'No'
                 ];
                 text += cells.join('\t') + '\n';
             });
@@ -235,7 +354,134 @@
         };
 
         const showAdminLogin = () => {
-            alert("Admin Panel ကို ပြင်ဆင်နေဆဲ ဖြစ်ပါသည်။");
+            if (isAdmin) {
+                isAdmin = false;
+                document.getElementById('adminPanel').style.display = 'none';
+                clearAdminForm();
+                applyFilters();
+                return;
+            }
+            const password = prompt("Admin Password ကို ရိုက်ထည့်ပါ:");
+            if (password === "Ashin@135") {
+                isAdmin = true;
+                document.getElementById('adminPanel').style.display = 'block';
+                populateAdminDropdowns();
+                applyFilters();
+            } else if (password !== null) {
+                alert("Password မှားယွင်းနေပါသည်။");
+            }
+        };
+
+        const populateAdminDropdowns = () => {
+            const classDropdown = document.getElementById('studentClass');
+            const schoolDropdown = document.getElementById('studentSchool');
+            
+            const uniqueClasses = [...new Set(allData.map(s => s.Class).filter(Boolean))].sort();
+            const uniqueSchools = [...new Set(allData.map(s => s.School).filter(Boolean))].sort();
+
+            while (classDropdown.options.length > 1) classDropdown.remove(1);
+            while (schoolDropdown.options.length > 1) schoolDropdown.remove(1);
+
+            uniqueClasses.forEach(cls => {
+                classDropdown.add(new Option(formatDisplayName(cls), cls));
+            });
+            uniqueSchools.forEach(school => {
+                schoolDropdown.add(new Option(formatDisplayName(school), school));
+            });
+        };
+
+        const clearAdminForm = () => {
+            document.getElementById('studentName').value = '';
+            document.getElementById('studentClass').value = '';
+            document.getElementById('studentSchool').value = '';
+            document.getElementById('studentCNum').value = '';
+            document.getElementById('studentStatus').value = 'Present';
+            document.getElementById('studentP').checked = false;
+            document.getElementById('studentTH').checked = false;
+            document.getElementById('studentN').checked = false;
+            document.getElementById('studentO').checked = false;
+            document.getElementById('editingIndex').value = '';
+        };
+
+        const getStudentDataFromForm = () => {
+            return {
+                Name: document.getElementById('studentName').value,
+                Class: document.getElementById('studentClass').value,
+                School: document.getElementById('studentSchool').value,
+                C_Num: document.getElementById('studentCNum').value,
+                P: document.getElementById('studentP').checked ? document.getElementById('studentP').value : '',
+                TH: document.getElementById('studentTH').checked ? document.getElementById('studentTH').value : '',
+                N: document.getElementById('studentN').checked ? document.getElementById('studentN').value : '',
+                O: document.getElementById('studentO').checked ? document.getElementById('studentO').value : '',
+                Status: document.getElementById('studentStatus').value
+            };
+        };
+
+        const addStudent = () => {
+            const newStudent = getStudentDataFromForm();
+            if (!newStudent.Name || !newStudent.Class || !newStudent.School) {
+                alert("နာမည်၊ အတန်း၊ နှင့် ကျောင်း အချက်အလက်များ လိုအပ်ပါသည်။");
+                return;
+            }
+            allData.push(newStudent);
+            applyFilters();
+            const presentStudents = allData.filter(s => s.Status.toLowerCase() !== 'left');
+            populateDropdownWithCount(document.getElementById('classFilter'), presentStudents, 'Class');
+            populateDropdownWithCount(document.getElementById('schoolFilter'), presentStudents, 'School');
+            clearAdminForm();
+        };
+
+        const editStudent = (index) => {
+            const student = allData[index];
+            document.getElementById('studentName').value = student.Name;
+            document.getElementById('studentClass').value = student.Class;
+            document.getElementById('studentSchool').value = student.School;
+            document.getElementById('studentCNum').value = student.C_Num;
+            document.getElementById('studentStatus').value = student.Status;
+            document.getElementById('studentP').checked = !!student.P;
+            document.getElementById('studentTH').checked = !!student.TH;
+            document.getElementById('studentN').checked = !!student.N;
+            document.getElementById('studentO').checked = !!student.O;
+            document.getElementById('editingIndex').value = index;
+            window.scrollTo(0, 0);
+        };
+
+        const updateStudent = () => {
+            const index = document.getElementById('editingIndex').value;
+            if (index === '') {
+                alert("ပြင်ဆင်ရန် ကျောင်းသားတစ်ဦးကို ရွေးချယ်ထားခြင်းမရှိပါ။ 'ပြင်ရန်' ခလုတ်ကို အရင်နှိပ်ပါ။");
+                return;
+            }
+            allData[index] = getStudentDataFromForm();
+            applyFilters();
+            const presentStudents = allData.filter(s => s.Status.toLowerCase() !== 'left');
+            populateDropdownWithCount(document.getElementById('classFilter'), presentStudents, 'Class');
+            populateDropdownWithCount(document.getElementById('schoolFilter'), presentStudents, 'School');
+            clearAdminForm();
+        };
+
+        const deleteStudent = (index) => {
+            if (confirm(`"${allData[index].Name}" ၏ စာရင်းကို အမှန်တကယ် ဖျက်မှာလား?`)) {
+                allData.splice(index, 1);
+                applyFilters();
+                const presentStudents = allData.filter(s => s.Status.toLowerCase() !== 'left');
+                populateDropdownWithCount(document.getElementById('classFilter'), presentStudents, 'Class');
+                populateDropdownWithCount(document.getElementById('schoolFilter'), presentStudents, 'School');
+            }
+        };
+
+        const downloadCSV = () => {
+            const year = document.getElementById('yearSelector').value;
+            const csvContent = Papa.unparse(allData, { header: true });
+            const blob = new Blob([`\uFEFF${csvContent}`], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            const url = URL.createObjectURL(blob);
+            link.setAttribute("href", url);
+            link.setAttribute("download", `students-${year}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         };
 
         document.addEventListener('DOMContentLoaded', () => {
