@@ -298,7 +298,6 @@
             render();
         };
 
-        // ✅ NEW: Central function to refresh all UI parts
         const updateUI = () => {
             const presentStudents = state.allData.filter(s => !s.Status || s.Status.toLowerCase() !== 'left');
             populateDropdownWithCount(DOMElements.classFilter, presentStudents, 'Class');
@@ -306,6 +305,7 @@
             applyFilters();
         };
 
+        // ✅ MODIFIED: The loading logic is now more robust.
         const loadStudents = async (year) => {
             state.isLoading = true;
             if (state.isAdmin) {
@@ -326,13 +326,13 @@
                 const result = Papa.parse(csvText, { header: true, skipEmptyLines: true });
                 
                 state.allData = result.data.map((row, index) => ({ ...row, id: Date.now() + index }));
-                updateUI(); // Use the central UI update function
             } catch (error) {
                 state.allData = [];
                 console.error(error);
                 DOMElements.studentBody.innerHTML = `<tr><td colspan="11" class="text-center text-red-500 py-10 font-bold">${error.message}</td></tr>`;
             } finally {
                 state.isLoading = false;
+                updateUI(); // This now runs at the very end, ensuring the loader is hidden correctly.
             }
         };
 
@@ -371,10 +371,8 @@
         const handleAddNewStudent = (e) => {
             e.preventDefault();
             const formData = new FormData(DOMElements.addStudentForm);
-            const newStudent = { id: Date.now(), Status: '' }; // Default status to Present
-            for (let [key, value] of formData.entries()) {
-                newStudent[key] = value;
-            }
+            const newStudent = { id: Date.now(), Status: '' };
+            for (let [key, value] of formData.entries()) { newStudent[key] = value; }
             ['P', 'TH', 'N', 'O'].forEach(key => {
                 newStudent[key] = DOMElements.addStudentForm.querySelector(`input[name="${key}"]`).checked;
             });
@@ -406,16 +404,9 @@
 
             state.currentViewData.forEach((student, index) => {
                 const row = [
-                    index + 1,
-                    student.Name || '',
-                    formatDisplayName(student.Class) || '',
-                    formatDisplayName(student.School) || '',
-                    student.C_Num || '',
-                    student.Status || 'Present',
-                    student.P ? 'Yes' : '',
-                    student.TH ? 'Yes' : '',
-                    student.N ? 'Yes' : '',
-                    student.O ? 'Yes' : ''
+                    index + 1, student.Name || '', formatDisplayName(student.Class) || '',
+                    formatDisplayName(student.School) || '', student.C_Num || '', student.Status || 'Present',
+                    student.P ? 'Yes' : '', student.TH ? 'Yes' : '', student.N ? 'Yes' : '', student.O ? 'Yes' : ''
                 ];
                 tableString += row.join('\t') + '\n';
             });
@@ -477,7 +468,6 @@
                     alert("စကားဝှက် မှားယွင်းနေပါသည်။");
                 }
             });
-            // ... (Same theme toggle as before)
         };
 
         document.addEventListener('DOMContentLoaded', () => {
