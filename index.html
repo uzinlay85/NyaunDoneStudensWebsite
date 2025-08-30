@@ -187,7 +187,7 @@
         
         <footer class="mt-6 flex flex-wrap gap-4 items-center">
             <button id="copyTableBtn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md">လက်ရှိစာရင်းကို ကူးယူမည်</button>
-            <button id="adminBtn" class="bg-gray-600 hover:bg-gray-700 text-white font(policy: nofollow) font-bold py-2 px-4 rounded-md">Admin Panel</button>
+            <button id="adminBtn" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-md">Admin Panel</button>
             <div class="ml-auto">
                 <button id="theme-toggle" type="button" class="text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg text-sm p-2.5">
                     <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
@@ -347,6 +347,11 @@
             element.value = selectedValue || '';
         };
 
+        const updateFilterDropdowns = () => {
+            populateDropdownWithCount(DOMElements.classFilter, state.allData, 'Class');
+            populateDropdownWithCount(DOMElements.schoolFilter, state.allData, 'School');
+        };
+
         const populateAdminDropdowns = () => {
             const presentStudents = state.allData.filter(s => !s.Status || s.Status.toLowerCase() !== 'left');
             populateDropdownWithCount(DOMElements.studentClass, presentStudents, 'Class');
@@ -444,7 +449,7 @@
             if (DOMElements.yearSubtitle) {
                 DOMElements.yearSubtitle.textContent = `${toBurmeseNumber(year)} ခုနှစ် သံဃာစာရင်း`;
             }
-            const csvFile = `students-${year}.csv`;
+            const csvFile = `./students-${year}.csv`;
             try {
                 const response = await fetch(csvFile);
                 if (!response.ok) throw new Error(`Data ဖိုင် "${csvFile}" ကို server တွင် ရှာမတွေ့ပါ။ (Status: ${response.status})`);
@@ -652,11 +657,17 @@
 
             if (localStorage.getItem('color-theme') === 'dark' || 
                 (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                if (DOMElements.themeLightIcon) DOMElements.themeLightIcon.classList.add('hidden');
+                if (DOMElements.themeLightIcon) DOMElements.themeLightIcon.classList.remove('hidden');
+                if (DOMElements.themeDarkIcon) DOMElements.themeDarkIcon.classList.add('hidden');
                 document.documentElement.classList.add('dark');
             } else {
-                if (DOMElements.themeDarkIcon) DOMElements.themeDarkIcon.classList.add('hidden');
+                if (DOMElements.themeDarkIcon) DOMElements.themeDarkIcon.classList.remove('hidden');
+                if (DOMElements.themeLightIcon) DOMElements.themeLightIcon.classList.add('hidden');
             }
+             // Correctly show initial theme icon state
+            const isCurrentlyDark = document.documentElement.classList.contains('dark');
+            if (DOMElements.themeLightIcon) DOMElements.themeLightIcon.classList.toggle('hidden', isCurrentlyDark);
+            if (DOMElements.themeDarkIcon) DOMElements.themeDarkIcon.classList.toggle('hidden', !isCurrentlyDark);
         };
 
         const handleTableActions = (e) => {
@@ -683,3 +694,4 @@
 </script>
 </body>
 </html>
+
