@@ -155,7 +155,7 @@
                 status: 'present', 
                 class: '', 
                 school: '',
-                selectedSubjects: [] // ✅ ADDED state for subject filter
+                selectedSubjects: []
             },
             editingRowId: null
         };
@@ -170,9 +170,9 @@
             statusFilter: document.getElementById('statusFilter'),
             classFilter: document.getElementById('classFilter'),
             schoolFilter: document.getElementById('schoolFilter'),
-            subjectFilterBtn: document.getElementById('subjectFilterBtn'), // ✅ ADDED
-            subjectCheckboxPanel: document.getElementById('subjectCheckboxPanel'), // ✅ ADDED
-            subjectCheckboxes: document.querySelectorAll('#subjectCheckboxPanel input[type="checkbox"]'), // ✅ ADDED
+            subjectFilterBtn: document.getElementById('subjectFilterBtn'),
+            subjectCheckboxPanel: document.getElementById('subjectCheckboxPanel'),
+            subjectCheckboxes: document.querySelectorAll('#subjectCheckboxPanel input[type="checkbox"]'),
             clearFiltersBtn: document.getElementById('clearFiltersBtn'),
             copyTableBtn: document.getElementById('copyTableBtn'),
             adminBtn: document.getElementById('adminBtn'),
@@ -184,37 +184,115 @@
             themeLightIcon: document.getElementById('theme-toggle-light-icon'),
         };
 
-        const toBurmeseNumber = (num) => (num === undefined || num === null) ? '' : String(num).split('').map(d => '၀၁၂၃၄၅၆၇၈၉'[parseInt(d)] || d).join('');
+        const toBurmeseNumber = (num) => {
+            if (num === undefined || num === null) return '';
+            const numerals = ['၀', '၁', '၂', '၃', '၄', '၅', '၆', '၇', '၈', '၉'];
+            return String(num).split('').map(d => numerals[parseInt(d)] || d).join('');
+        };
+        
         const formatDisplayName = (name) => (typeof name !== 'string' || !name.includes('-')) ? name : name.substring(name.indexOf('-') + 1);
 
         const render = () => {
             renderTableHead();
             renderTableBody();
             updateCounts();
-            // ✅ ADDED: UI feedback for active subject filter
             if (DOMElements.subjectFilterBtn) {
                 DOMElements.subjectFilterBtn.classList.toggle('bg-indigo-100', state.filters.selectedSubjects.length > 0);
                 DOMElements.subjectFilterBtn.classList.toggle('dark:bg-indigo-900', state.filters.selectedSubjects.length > 0);
             }
         };
 
-        const renderTableHead = () => { /* ... No changes ... */ };
-        const renderTableBody = () => { /* ... No changes ... */ };
-        const updateCounts = () => { /* ... No changes ... */ };
-        const populateDropdownWithCount = (element, data, key) => { /* ... No changes ... */ };
+        const renderTableHead = () => {
+            if (!DOMElements.tableHead) return;
+            let headers = `<tr>
+                <th class="text-left">စဉ်</th><th class="text-left">နာမည်</th><th class="text-left">အတန်း</th>
+                <th class="text-left">ကျောင်း</th><th class="text-left">ခုံနံပါတ်</th>
+                <th class="text-center">ပါ</th><th class="text-center">သီ</th><th class="text-center">ဏီ</th><th class="text-center">သစ်/ဟောင်း</th>
+                <th class="text-left">Status</th>`;
+            if (state.isAdmin) {
+                headers += `<th class="text-left">Actions</th>`;
+            }
+            headers += `</tr>`;
+            DOMElements.tableHead.innerHTML = headers;
+        };
+
+        const renderTableBody = () => {
+            const tbody = DOMElements.studentBody;
+            if (!tbody) return;
+            tbody.innerHTML = '';
+            if (state.isLoading) {
+                tbody.innerHTML = `<tr><td colspan="11" class="text-center py-10"><div class="loader mx-auto"></div></td></tr>`;
+                return;
+            }
+            if (state.currentViewData.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="11" class="text-center py-10">ရှာဖွေမှုနှင့် ကိုက်ညီသော အချက်အလက်များ မရှိပါ။</td></tr>`;
+                return;
+            }
+            const fragment = document.createDocumentFragment();
+            state.currentViewData.forEach((student, index) => {
+                const isEditing = state.isAdmin && state.editingRowId === student.id;
+                const row = document.createElement('tr');
+                row.dataset.id = student.id;
+                
+                let rowHTML = `<td data-label="စဉ်">${toBurmeseNumber(index + 1)}</td>`;
+                if (isEditing) {
+                     rowHTML += `
+                        <td data-label="နာမည်"><input type="text" name="Name" value="${student.Name || ''}" class="w-full border p-1 rounded"></td>
+                        <td data-label="အတန်း"><input type="text" name="Class" value="${student.Class || ''}" class="w-full border p-1 rounded"></td>
+                        <td data-label="ကျောင်း"><input type="text" name="School" value="${student.School || ''}" class="w-full border p-1 rounded"></td>
+                        <td data-label="ခုံနံပါတ်"><input type="text" name="C_Num" value="${student.C_Num || ''}" class="w-20 border p-1 rounded"></td>
+                        <td data-label="ဘာသာရပ်များ" class="text-center">
+                            <div class="flex flex-wrap justify-center gap-2">
+                            <input type="checkbox" name="P" ${student.P ? 'checked' : ''}>
+                            <input type="checkbox" name="TH" ${student.TH ? 'checked' : ''}>
+                            <input type="checkbox" name="N" ${student.N ? 'checked' : ''}>
+                            <input type="checkbox" name="O" ${student.O ? 'checked' : ''}>
+                            </div>
+                        </td>
+                        <td data-label="Status">
+                            <select name="Status" class="border p-1 rounded">
+                                <option value="" ${!student.Status || student.Status !== 'Left' ? 'selected' : ''}>Present</option>
+                                <option value="Left" ${student.Status === 'Left' ? 'selected' : ''}>Left</option>
+                            </select>
+                        </td>
+                        <td data-label="Actions">
+                            <button class="button text-sm bg-green-500 text-white p-1 rounded save-btn">Save</button>
+                            <button class="button text-sm bg-gray-500 text-white p-1 rounded cancel-btn">Cancel</button>
+                        </td>`;
+                } else {
+                     rowHTML += `
+                        <td data-label="နာမည်">${student.Name || ''}</td>
+                        <td data-label="အတန်း">${formatDisplayName(student.Class) || ''}</td>
+                        <td data-label="ကျောင်း">${formatDisplayName(student.School) || ''}</td>
+                        <td data-label="ခုံနံပါတ်">${student.C_Num || ''}</td>
+                        <td data-label="ပါ" class="text-center">${student.P ? '✅' : '—'}</td>
+                        <td data-label="သီ" class="text-center">${student.TH ? '✅' : '—'}</td>
+                        <td data-label="ဏီ" class="text-center">${student.N ? '✅' : '—'}</td>
+                        <td data-label="သစ်/ဟောင်း" class="text-center">${student.O ? '✅' : '—'}</td>
+                        <td data-label="Status"><span class="${student.Status === 'Left' ? 'text-red-500' : 'text-green-600'}">${student.Status || 'Present'}</span></td>`;
+                    if (state.isAdmin) {
+                        rowHTML += `<td data-label="Actions">
+                                        <button class="button text-sm bg-yellow-500 text-white p-1 rounded edit-btn">Edit</button>
+                                        <button class="button text-sm bg-red-500 text-white p-1 rounded delete-btn">Delete</button>
+                                    </td>`;
+                    }
+                }
+                row.innerHTML = rowHTML;
+                fragment.appendChild(row);
+            });
+            tbody.appendChild(fragment);
+        };
+        
+        const updateCounts = () => { /* ... Code from previous working version ... */ };
+        const populateDropdownWithCount = (element, data, key) => { /* ... Code from previous working version ... */ };
         
         const applyFilters = () => {
             let filtered = state.allData.filter(student => {
-                // ✅ MODIFIED: Destructure selectedSubjects from state.filters
                 const { name, status, class: classFilter, school, selectedSubjects } = state.filters;
-                
                 const statusMatch = status === 'all' ||
                     (status === 'present' && (!student.Status || student.Status.toLowerCase() !== 'left')) ||
                     (status === 'left' && student.Status && student.Status.toLowerCase() === 'left');
-
-                // ✅ ADDED: Subject matching logic is back
-                const subjectMatch = selectedSubjects.length === 0 || selectedSubjects.every(subjectKey => student[subjectKey]);
-
+                const subjectMatch = selectedSubjects.length === 0 || selectedSubjects.every(subjectKey => student[subjectKey] && String(student[subjectKey]).toLowerCase() !== 'false');
                 return statusMatch && subjectMatch &&
                     (!name || (student.Name && student.Name.toLowerCase().includes(name.toLowerCase()))) &&
                     (!classFilter || student.Class === classFilter) &&
@@ -231,68 +309,124 @@
             applyFilters();
         };
 
-        const loadStudents = async (year) => { /* ... No changes ... */ };
-        const handleTableClick = (e) => { /* ... No changes ... */ };
-        const handleAddNewStudent = (e) => { /* ... No changes ... */ };
-        const handleExportCsv = () => { /* ... No changes ... */ };
-        const copyVisibleTableToClipboard = () => { /* ... No changes ... */ };
+        const loadStudents = async (year) => {
+            state.isLoading = true;
+            if (state.isAdmin) {
+                state.isAdmin = false;
+                DOMElements.adminControls.classList.add('hidden');
+                DOMElements.adminBtn.textContent = 'Admin Panel';
+                DOMElements.adminBtn.classList.replace('bg-red-600', 'bg-gray-600');
+            }
+            render();
+            if(DOMElements.yearSubtitle) DOMElements.yearSubtitle.textContent = `${toBurmeseNumber(year)} ခုနှစ် သံဃာစာရင်း`;
+            const csvFile = `students-${year}.csv`;
+            try {
+                const response = await fetch(csvFile);
+                if (!response.ok) throw new Error(`Data file "${csvFile}" not found.`);
+                const csvText = await response.text();
+                const result = Papa.parse(csvText, { header: true, skipEmptyLines: true, transform: (value) => value.trim() });
+                state.allData = result.data.map((row, index) => ({ ...row, id: Date.now() + index }));
+            } catch (error) {
+                state.allData = [];
+                console.error(error);
+                if(DOMElements.studentBody) DOMElements.studentBody.innerHTML = `<tr><td colspan="11" class="text-center text-red-500 py-10 font-bold">${error.message}</td></tr>`;
+            } finally {
+                state.isLoading = false;
+                updateUI();
+            }
+        };
+
+        const handleTableClick = (e) => { /* ... Code from previous working version ... */ };
+        const handleAddNewStudent = (e) => { /* ... Code from previous working version ... */ };
+        const handleExportCsv = () => { /* ... Code from previous working version ... */ };
+        const copyVisibleTableToClipboard = () => { /* ... Code from previous working version ... */ };
 
         const setupEventListeners = () => {
-            DOMElements.yearSelector.addEventListener('change', (e) => loadStudents(e.target.value));
-            DOMElements.studentBody.addEventListener('click', handleTableClick);
-            DOMElements.addStudentForm.addEventListener('submit', handleAddNewStudent);
-            DOMElements.exportCsvBtn.addEventListener('click', handleExportCsv);
+            // Defensive checks: only add listeners if elements exist
+            if (DOMElements.yearSelector) DOMElements.yearSelector.addEventListener('change', (e) => loadStudents(e.target.value));
+            if (DOMElements.studentBody) DOMElements.studentBody.addEventListener('click', handleTableClick);
+            if (DOMElements.addStudentForm) DOMElements.addStudentForm.addEventListener('submit', handleAddNewStudent);
+            if (DOMElements.exportCsvBtn) DOMElements.exportCsvBtn.addEventListener('click', handleExportCsv);
             
             const handleFilterChange = () => {
-                state.filters.name = DOMElements.nameSearch.value;
-                state.filters.status = DOMElements.statusFilter.value;
-                state.filters.class = DOMElements.classFilter.value;
-                state.filters.school = DOMElements.schoolFilter.value;
+                if (DOMElements.nameSearch) state.filters.name = DOMElements.nameSearch.value;
+                if (DOMElements.statusFilter) state.filters.status = DOMElements.statusFilter.value;
+                if (DOMElements.classFilter) state.filters.class = DOMElements.classFilter.value;
+                if (DOMElements.schoolFilter) state.filters.school = DOMElements.schoolFilter.value;
                 applyFilters();
             };
-            [DOMElements.nameSearch, DOMElements.statusFilter, DOMElements.classFilter, DOMElements.schoolFilter].forEach(el => {
-                el.addEventListener('change', handleFilterChange);
-                if (el.type === 'text') el.addEventListener('keyup', handleFilterChange);
-            });
-            
-            DOMElements.clearFiltersBtn.addEventListener('click', () => {
-                DOMElements.nameSearch.value = '';
-                DOMElements.statusFilter.value = 'present';
-                DOMElements.classFilter.value = '';
-                DOMElements.schoolFilter.value = '';
-                // ✅ ADDED: Clear subject filters
-                DOMElements.subjectCheckboxes.forEach(cb => cb.checked = false);
-                state.filters.selectedSubjects = [];
-                handleFilterChange();
-            });
-            
-            DOMElements.copyTableBtn.addEventListener('click', copyVisibleTableToClipboard);
 
-            // ✅ ADDED: Event listeners for subject filter
+            [DOMElements.nameSearch, DOMElements.statusFilter, DOMElements.classFilter, DOMElements.schoolFilter].forEach(el => {
+                if (el) {
+                    el.addEventListener('change', handleFilterChange);
+                    if (el.type === 'text') el.addEventListener('keyup', handleFilterChange);
+                }
+            });
+            
+            if (DOMElements.clearFiltersBtn) {
+                DOMElements.clearFiltersBtn.addEventListener('click', () => {
+                    if (DOMElements.nameSearch) DOMElements.nameSearch.value = '';
+                    if (DOMElements.statusFilter) DOMElements.statusFilter.value = 'present';
+                    if (DOMElements.classFilter) DOMElements.classFilter.value = '';
+                    if (DOMElements.schoolFilter) DOMElements.schoolFilter.value = '';
+                    DOMElements.subjectCheckboxes.forEach(cb => cb.checked = false);
+                    state.filters.selectedSubjects = [];
+                    handleFilterChange();
+                });
+            }
+            
+            if (DOMElements.copyTableBtn) DOMElements.copyTableBtn.addEventListener('click', copyVisibleTableToClipboard);
+
             if (DOMElements.subjectFilterBtn) {
                 DOMElements.subjectFilterBtn.addEventListener('click', (e) => {
                     e.stopPropagation();
-                    DOMElements.subjectCheckboxPanel.classList.toggle('hidden');
+                    if (DOMElements.subjectCheckboxPanel) DOMElements.subjectCheckboxPanel.classList.toggle('hidden');
                 });
             }
-            DOMElements.subjectCheckboxes.forEach(checkbox => {
-                checkbox.addEventListener('change', () => {
-                    state.filters.selectedSubjects = Array.from(DOMElements.subjectCheckboxes)
-                        .filter(cb => cb.checked)
-                        .map(cb => cb.dataset.subject);
-                    applyFilters();
+
+            if (DOMElements.subjectCheckboxes) {
+                DOMElements.subjectCheckboxes.forEach(checkbox => {
+                    checkbox.addEventListener('change', () => {
+                        state.filters.selectedSubjects = Array.from(DOMElements.subjectCheckboxes)
+                            .filter(cb => cb.checked)
+                            .map(cb => cb.dataset.subject);
+                        applyFilters();
+                    });
                 });
-            });
+            }
+
             document.addEventListener('click', (e) => {
-                if (DOMElements.subjectCheckboxPanel && !DOMElements.subjectFilterBtn.contains(e.target) && !DOMElements.subjectCheckboxPanel.contains(e.target)) {
+                if (DOMElements.subjectCheckboxPanel && DOMElements.subjectFilterBtn && !DOMElements.subjectFilterBtn.contains(e.target) && !DOMElements.subjectCheckboxPanel.contains(e.target)) {
                     DOMElements.subjectCheckboxPanel.classList.add('hidden');
                 }
             });
 
-            DOMElements.adminBtn.addEventListener('click', () => { /* ... No changes ... */ });
-            // ... (Theme toggle logic)
+            if (DOMElements.adminBtn) {
+                DOMElements.adminBtn.addEventListener('click', () => {
+                    if (state.isAdmin) {
+                        state.isAdmin = false;
+                        state.editingRowId = null;
+                        if (DOMElements.adminControls) DOMElements.adminControls.classList.add('hidden');
+                        DOMElements.adminBtn.textContent = 'Admin Panel';
+                        DOMElements.adminBtn.classList.replace('bg-red-600', 'bg-gray-600');
+                        render();
+                        return;
+                    }
+                    const password = prompt("Admin စကားဝှက်ကို ထည့်ပါ:", "");
+                    if (password === "Ashin@135") {
+                        state.isAdmin = true;
+                        if (DOMElements.adminControls) DOMElements.adminControls.classList.remove('hidden');
+                        DOMElements.adminBtn.textContent = 'Exit Admin Mode';
+                        DOMElements.adminBtn.classList.replace('bg-gray-600', 'bg-red-600');
+                        render();
+                    } else if (password !== null) {
+                        alert("စကားဝှက် မှားယွင်းနေပါသည်။");
+                    }
+                });
+            }
         };
 
+        // Initialize the application
         document.addEventListener('DOMContentLoaded', () => {
             setupEventListeners();
             loadStudents(DOMElements.yearSelector.value);
