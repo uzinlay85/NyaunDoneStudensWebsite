@@ -459,7 +459,13 @@
                     skipEmptyLines: true,
                     transform: (value, field) => {
                         if (['P', 'TH', 'N', 'O'].includes(field)) {
-                            return value.toLowerCase() === 'true' || value === '✅';
+                            // Trim whitespace from string values before comparison to handle inputs like " TRUE "
+                            if (typeof value === 'string') {
+                                const processedValue = value.trim().toLowerCase();
+                                return processedValue === 'true' || processedValue === '✅';
+                            }
+                            // For non-string values (e.g., already boolean), just convert to boolean
+                            return !!value;
                         }
                         return sanitizeInput(value);
                     }
