@@ -457,6 +457,7 @@
                 const result = Papa.parse(csvText, {
                     header: true,
                     skipEmptyLines: true,
+                    transformHeader: header => header.trim(),
                     transform: (value, field) => {
                         if (['P', 'TH', 'N', 'O'].includes(field)) {
                             // Trim whitespace from string values before comparison to handle inputs like " TRUE "
