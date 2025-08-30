@@ -80,6 +80,7 @@
                 font-weight: bold;
                 text-align: left;
                 white-space: nowrap;
+                color: var(--text-secondary);
             }
             td.actions-cell { padding-left: 1rem; }
             td.actions-cell div { justify-content: flex-end; }
@@ -115,12 +116,22 @@
              </section>
 
         <section class="card rounded-lg p-4 mb-6">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4 items-center">
-                <input type="text" id="nameSearch" placeholder="နာမည်ဖြင့် ရှာရန်..." class="lg:col-span-2">
-                <select id="statusFilter"><option value="present">လက်ရှိရှိသူများ</option><option value="left">ထွက်သွားသူများ</option><option value="all">အားလုံး</option></select>
-                <select id="classFilter"><option value="">အတန်းအားလုံး</option></select>
-                <select id="schoolFilter"><option value="">ကျောင်းအားလုံး</option></select>
-                 <button id="clearFiltersBtn" class="bg-gray-200 dark:bg-gray-600 hover:bg-gray-300 dark:hover:bg-gray-500 text-sm font-bold py-2 px-4 rounded-md">ရှင်းလင်းမည်</button>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-7 gap-4 items-center">
+                <input type="text" id="nameSearch" placeholder="နာမည်ဖြင့် ရှာရန်..." class="lg:col-span-2 rounded-md">
+                <select id="statusFilter" class="rounded-md"><option value="present">လက်ရှိရှိသူများ</option><option value="left">ထွက်သွားသူများ</option><option value="all">အားလုံး</option></select>
+                <select id="classFilter" class="rounded-md"><option value="">အတန်းအားလုံး</option></select>
+                <select id="schoolFilter" class="rounded-md"><option value="">ကျောင်းအားလုံး</option></select>
+                
+                <select id="subjectCountFilter" class="rounded-md">
+                    <option value="">ဘာသာရပ် အရေအတွက်</option>
+                    <option value="4">၄ ဘာသာ</option> <option value="3">၃ ဘာသာ</option> <option value="2">၂ ဘာသာ</option> <option value="1">၁ ဘာသာ</option>
+                    <option value="custom">ဘာသာရပ်ဖြင့်ရှာရန်</option>
+                </select>
+                <select id="customSubjectFilter" style="display:none;" class="rounded-md">
+                    <option value="">ဘာသာရပ် ရွေးပါ</option>
+                    <option value="P">ပါ</option><option value="TH">သီ</option><option value="N">ဏီ</option><option value="O">သစ်/ဟောင်း</option>
+                </select>
+                <button id="clearFiltersBtn" class="bg-gray-200 dark:bg-gray-600 hover:bg-gray-300 dark:hover:bg-gray-500 text-sm font-bold py-2 px-4 rounded-md lg:col-start-7">ရှင်းလင်းမည်</button>
             </div>
         </section>
 
@@ -152,7 +163,6 @@
     // --- IIFE to encapsulate code and avoid global scope pollution ---
     (() => {
         // --- 1. STATE MANAGEMENT ---
-        // All application data is stored here. Functions read from and write to this object.
         const state = {
             allData: [],
             currentViewData: [],
@@ -162,7 +172,9 @@
                 name: '',
                 status: 'present',
                 class: '',
-                school: ''
+                school: '',
+                subjectCount: '',
+                customSubject: ''
             }
         };
 
@@ -185,16 +197,16 @@
             statusFilter: document.getElementById('statusFilter'),
             classFilter: document.getElementById('classFilter'),
             schoolFilter: document.getElementById('schoolFilter'),
-            // Add other elements as needed...
+            subjectCountFilter: document.getElementById('subjectCountFilter'),
+            customSubjectFilter: document.getElementById('customSubjectFilter'),
         };
 
         // --- 4. UI RENDERING FUNCTIONS ---
-        // These functions ONLY read from the state and update the DOM. They don't contain logic.
         const render = () => {
             renderTable();
             updateCounts();
-            updateFilterDropdowns();
             DOMElements.actionsHeader.style.display = state.isAdmin ? '' : 'none';
+            DOMElements.customSubjectFilter.style.display = state.filters.subjectCount === 'custom' ? 'block' : 'none';
         };
 
         const renderTable = () => {
@@ -214,7 +226,7 @@
             state.currentViewData.forEach((student, index) => {
                 const originalIndex = state.allData.findIndex(s => s === student);
                 const row = document.createElement('tr');
-                if (student.Status.toLowerCase() === 'left') row.classList.add('opacity-50', 'line-through');
+                if (student.Status.toLowerCase() === 'left') row.classList.add('opacity-50');
                 
                 let actionsCell = '';
                 if (state.isAdmin) {
@@ -267,8 +279,6 @@
                 return acc;
             }, {});
             const sortedKeys = Object.keys(counts).sort();
-            
-            // Preserve the selected value
             const selectedValue = element.value;
             element.innerHTML = `<option value="">${element.id.includes('class') ? 'အတန်း' : 'ကျောင်း'}အားလုံး</option>`;
             
@@ -279,17 +289,24 @@
             element.value = selectedValue;
         };
 
-
         // --- 5. DATA LOGIC & EVENT HANDLERS ---
         const applyFilters = () => {
-            const { name, status, class: classFilter, school } = state.filters;
+            const { name, status, class: classFilter, school, subjectCount, customSubject } = state.filters;
             
             let filtered = state.allData.filter(student => {
                 let statusMatch = true;
                 if (status === 'present') statusMatch = student.Status.toLowerCase() !== 'left';
                 else if (status === 'left') statusMatch = student.Status.toLowerCase() === 'left';
                 
-                return statusMatch &&
+                let subjectMatch = true;
+                if (subjectCount === 'custom' && customSubject) {
+                    subjectMatch = !!student[customSubject];
+                } else if (subjectCount && subjectCount !== 'custom') {
+                    const count = [student.P, student.TH, student.N, student.O].filter(Boolean).length;
+                    subjectMatch = count === parseInt(subjectCount);
+                }
+
+                return statusMatch && subjectMatch &&
                     (!name || student.Name.toLowerCase().includes(name.toLowerCase())) &&
                     (!classFilter || student.Class === classFilter) &&
                     (!school || student.School === school);
@@ -313,7 +330,7 @@
 
         const loadStudents = async (year) => {
             state.isLoading = true;
-            render(); // Show loader
+            render(); 
             
             DOMElements.yearSubtitle.textContent = `${toBurmeseNumber(year)} ခုနှစ် သံဃာစာရင်း`;
             const csvFile = `students-${year}.csv`;
@@ -325,6 +342,7 @@
                 
                 const result = Papa.parse(csvText, { header: true, skipEmptyLines: true });
                 state.allData = result.data.map(row => ({ ...row, Status: row.Status || 'Present' }));
+                updateFilterDropdowns(); // Populate dropdowns after data is loaded
                 
             } catch (error) {
                 state.allData = [];
@@ -332,7 +350,7 @@
                 console.error(error);
             } finally {
                 state.isLoading = false;
-                applyFilters(); // This will call render() at the end
+                applyFilters();
             }
         };
 
@@ -341,6 +359,8 @@
             state.filters.status = DOMElements.statusFilter.value;
             state.filters.class = DOMElements.classFilter.value;
             state.filters.school = DOMElements.schoolFilter.value;
+            state.filters.subjectCount = DOMElements.subjectCountFilter.value;
+            state.filters.customSubject = DOMElements.customSubjectFilter.value;
             applyFilters();
         };
 
@@ -349,6 +369,8 @@
             DOMElements.statusFilter.value = 'present';
             DOMElements.classFilter.value = '';
             DOMElements.schoolFilter.value = '';
+            DOMElements.subjectCountFilter.value = '';
+            DOMElements.customSubjectFilter.value = '';
             handleFilterChange();
         };
 
@@ -358,10 +380,8 @@
             
             const { action, index } = target.dataset;
             if (action === 'edit') {
-                // To be implemented
                 alert(`ပြင်ရန်: Index ${index}`);
             } else if (action === 'delete') {
-                // To be implemented
                 if (confirm(`"${state.allData[index].Name}" ၏ စာရင်းကို အမှန်တကယ် ဖျက်မှာလား?`)) {
                      state.allData.splice(index, 1);
                      applyFilters();
@@ -374,23 +394,14 @@
             const toggleBtn = document.getElementById('theme-toggle');
             const darkIcon = document.getElementById('theme-toggle-dark-icon');
             const lightIcon = document.getElementById('theme-toggle-light-icon');
-
             const applyTheme = (isDark) => {
-                if (isDark) {
-                    document.documentElement.classList.add('dark');
-                    darkIcon.classList.remove('hidden');
-                    lightIcon.classList.add('hidden');
-                } else {
-                    document.documentElement.classList.remove('dark');
-                    darkIcon.classList.add('hidden');
-                    lightIcon.classList.remove('hidden');
-                }
+                document.documentElement.classList.toggle('dark', isDark);
+                darkIcon.classList.toggle('hidden', !isDark);
+                lightIcon.classList.toggle('hidden', isDark);
             };
-            
             const isDarkMode = localStorage.getItem('color-theme') === 'dark' || 
                                (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches);
             applyTheme(isDarkMode);
-
             toggleBtn.addEventListener('click', () => {
                 const isDarkNow = document.documentElement.classList.contains('dark');
                 localStorage.setItem('color-theme', isDarkNow ? 'light' : 'dark');
@@ -400,29 +411,24 @@
 
         // --- 6. INITIALIZATION & EVENT LISTENERS ---
         const init = () => {
-            // Setup Event Listeners
             DOMElements.yearSelector.addEventListener('change', (e) => loadStudents(e.target.value));
-            ['keyup', 'change'].forEach(evt => {
-                DOMElements.nameSearch.addEventListener(evt, handleFilterChange);
-                DOMElements.statusFilter.addEventListener(evt, handleFilterChange);
-                DOMElements.classFilter.addEventListener(evt, handleFilterChange);
-                DOMElements.schoolFilter.addEventListener(evt, handleFilterChange);
+            
+            // Listen to all filter changes
+            [DOMElements.nameSearch, DOMElements.statusFilter, DOMElements.classFilter, DOMElements.schoolFilter, DOMElements.subjectCountFilter, DOMElements.customSubjectFilter].forEach(el => {
+                el.addEventListener('change', handleFilterChange);
             });
+            DOMElements.nameSearch.addEventListener('keyup', handleFilterChange);
+
 
             document.getElementById('clearFiltersBtn').addEventListener('click', clearFilters);
             DOMElements.studentBody.addEventListener('click', handleTableActions);
 
-            // Setup Theme
             setupTheme();
-
-            // Initial Load
             loadStudents(DOMElements.yearSelector.value);
         };
         
-        // Run the application
         document.addEventListener('DOMContentLoaded', init);
-
-    })(); // End of IIFE
+    })();
 </script>
 </body>
 </html>
