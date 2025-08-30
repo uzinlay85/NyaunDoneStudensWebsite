@@ -318,17 +318,18 @@
 
                 state.allData = result.data.map(d => ({
                     ...d,
-                    P: d.P === 'TRUE' || d.P === 'true' || d.P === '1',
-                    TH: d.TH === 'TRUE' || d.TH === 'true' || d.TH === '1',
-                    N: d.N === 'TRUE' || d.N === 'true' || d.N === '1',
-                    O: d.O === 'TRUE' || d.O === 'true' || d.O === '1',
+                    P: String(d.P || '').toUpperCase() === 'TRUE' || d.P === '1',
+                    TH: String(d.TH || '').toUpperCase() === 'TRUE' || d.TH === '1',
+                    N: String(d.N || '').toUpperCase() === 'TRUE' || d.N === '1',
+                    O: String(d.O || '').toUpperCase() === 'TRUE' || d.O === '1',
                 }));
 
                 const presentStudents = state.allData.filter(s => !s.Status || s.Status.toLowerCase() !== 'left');
                 populateDropdownWithCount(DOMElements.classFilter, presentStudents, 'Class');
                 populateDropdownWithCount(DOMElements.schoolFilter, presentStudents, 'School');
                 
-            } catch (error) {
+            } catch (error)
+{
                 state.allData = [];
                 if(DOMElements.studentBody) DOMElements.studentBody.innerHTML = `<tr><td colspan="9" class="text-center text-red-500 py-10 font-bold">${error.message}</td></tr>`;
                 console.error(error);
@@ -434,3 +435,4 @@
 </script>
 </body>
 </html>
+
