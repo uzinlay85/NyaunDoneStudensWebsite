@@ -4,146 +4,210 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ညောင်တုန်းကျောင်းတိုက် သံဃာတော်များ</title>
-    <link rel="icon" type="image/png" href="logo.png">
+    <!-- Favicon as inline SVG for simplicity -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22> monastic_school </text></svg>">
     <script src="https://unpkg.com/papaparse@latest/papaparse.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Pyidaungsu:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Pyidaungsu', sans-serif; background-color: #f9fafb; color: #374151; }
-        .container { max-width: 1280px; margin: auto; padding: 2rem; }
-        .header { text-align: center; margin-bottom: 1rem; }
-        .card { background-color: #ffffff; border-radius: 0.75rem; border: 1px solid #e5e7eb; padding: 1.5rem; box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05  ); margin-bottom: 1.5rem; }
-        .table-container { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; min-width: 800px; }
-        th, td { padding: 1rem 1.5rem; text-align: left; border-bottom: 1px solid #e5e7eb; vertical-align: middle; }
-        thead { background-color: #f3f4f6; }
-        th { font-weight: 700; color: #4b5563; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.05em; }
-        tbody tr:hover { background-color: #fafafa; }
-        .filter-container { display: flex; flex-wrap: wrap; gap: 1rem; align-items: center; }
-        input[type="text"], select { background-color: #ffffff; border: 1px solid #d1d5db; border-radius: 0.5rem; padding: 0.6rem 1rem; color: #374151; transition: border-color 0.2s, box-shadow 0.2s; font-family: 'Pyidaungsu', sans-serif; }
-        input[type="text"]:focus, select:focus { outline: none; border-color: #60a5fa; box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.3); }
-        .button { padding: 0.75rem 1.5rem; border: none; border-radius: 0.5rem; cursor: pointer; font-weight: 700; transition: background-color 0.2s, transform 0.1s; }
-        .button-sm { padding: 0.4rem 0.8rem; font-size: 0.8rem; }
-        .button-primary { background-color: #3b82f6; color: white; }
-        .button-primary:hover { background-color: #2563eb; }
-        .button-secondary { background-color: #6b7280; color: white; }
-        .button-secondary:hover { background-color: #4b5563; }
-        .button-warning { background-color: #f59e0b; color: white; }
-        .button-warning:hover { background-color: #d97706; }
-        .button-danger { background-color: #ef4444; color: white; }
-        .button-danger:hover { background-color: #dc2626; }
-        .button-clear { background-color: transparent; color: #6b7280; border: 1px solid #d1d5db; padding: 0.6rem 1rem; }
-        .button-clear:hover { background-color: #f3f4f6; }
-        .button:active { transform: scale(0.98); }
-        .total-count { display: flex; justify-content: space-around; text-align: center; }
-        .total-count .count-item span { font-size: 0.9rem; color: #6b7280; }
-        .total-count .count-item strong { display: block; font-size: 1.75rem; font-weight: 700; color: #1e40af; }
-        .error { color: #991b1b; margin-top: 1rem; background-color: #fee2e2; padding: 1rem; border-radius: 0.5rem; border: 1px solid #fca5a5; }
-        .text-center-cell { text-align: center; }
-        .text-left-cell { text-align: left; }
-        .transferred-student td { color: #9ca3af; text-decoration: line-through; }
-        .transferred-student:hover { background-color: #fef2f2 !important; }
-        #adminPanel { background-color: #fffbeb; border: 1px solid #fde68a; padding: 1.5rem; border-radius: 0.75rem; margin-bottom: 1.5rem; }
-        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; }
-        .subject-checkboxes { display: flex; gap: 1rem; align-items: center; }
+        /* Pyidaungsu font for the whole application */
+        body { 
+            font-family: 'Pyidaungsu', sans-serif; 
+            background-color: #f7f8fc;
+        }
+        /* Custom scrollbar for better aesthetics */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #888; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #555; }
+        /* Style for line-through on transferred students */
+        .transferred-student td {
+            text-decoration: line-through;
+            color: #9ca3af; /* gray-400 */
+        }
     </style>
 </head>
-<body>
-    <div class="container">
-        <div class="header">
-            <div class="flex justify-center items-center gap-6">
-                <img src="logo.png" alt="ကျောင်းတိုက် လိုဂို" class="h-16 w-16 object-contain">
-                <div class="text-center">
+<body class="text-gray-700">
+
+    <!-- Main Container -->
+    <div class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+        
+        <!-- Header Section -->
+        <header class="text-center mb-8">
+            <div class="flex justify-center items-center gap-4">
+                <!-- SVG Logo Placeholder -->
+                <svg class="h-16 w-16 text-yellow-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0012 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75z" />
+                </svg>
+                <div>
                     <h1 class="text-3xl font-bold text-gray-800">ပါဠိတက္ကသိုလ်ညောင်တုန်းကျောင်းတိုက်</h1>
                     <p class="text-lg text-gray-500 mt-1" id="yearSubtitle">သံဃာစာရင်း</p>
                 </div>
-                <img src="logo.png" alt="ကျောင်းတိုက် လိုဂို" class="h-16 w-16 object-contain">
+                 <svg class="h-16 w-16 text-yellow-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0012 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75z" />
+                </svg>
             </div>
-        </div>
+        </header>
 
-        <div class="card flex justify-center">
-            <div class="flex items-center gap-3">
-                <label for="yearSelector" class="font-bold text-gray-700">ခုနှစ် ရွေးချယ်ရန်:</label>
-                <select id="yearSelector" class="border p-2 rounded">
-                    <option value="2025" selected>၂၀၂၅</option>
-                    <option value="2026">၂၀၂၆</option>
-                </select>
-            </div>
+        <!-- Year Selector Card -->
+        <div class="bg-white rounded-xl shadow-md p-4 mb-6 border border-gray-200 flex justify-center items-center gap-3">
+            <label for="yearSelector" class="font-bold text-gray-700">ခုနှစ် ရွေးချယ်ရန်:</label>
+            <select id="yearSelector" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5">
+                <option value="2025" selected>၂၀၂၅</option>
+                <option value="2026">၂၀၂၆</option>
+            </select>
         </div>
         
-        <div class="card total-count" id="totalCount"></div>
+        <!-- Total Counts Card -->
+        <div id="totalCount" class="bg-white rounded-xl shadow-md p-6 mb-6 border border-gray-200 grid grid-cols-1 sm:grid-cols-3 gap-4 text-center"></div>
 
-        <div id="adminPanel" style="display: none;">
-            <h2 class="text-xl font-bold mb-4 text-yellow-800">Admin Panel</h2>
-            <div class="form-grid mb-4">
-                <input type="text" id="studentName" placeholder="နာမည်">
-                <select id="studentClass"><option value="">အတန်း ရွေးပါ</option></select>
-                <select id="studentSchool"><option value="">ကျောင်း ရွေးပါ</option></select>
-                <input type="text" id="studentCNum" placeholder="ခုံနံပါတ်">
-                <select id="studentStatus">
+        <!-- Admin Panel -->
+        <div id="adminPanel" class="hidden bg-amber-50 border border-amber-300 rounded-xl p-6 mb-6">
+            <h2 class="text-xl font-bold mb-4 text-amber-800">Admin Panel</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-4">
+                <input type="text" id="studentName" placeholder="နာမည်" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                <select id="studentClass" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"><option value="">အတန်း ရွေးပါ</option></select>
+                <select id="studentSchool" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"><option value="">ကျောင်း ရွေးပါ</option></select>
+                <input type="text" id="studentCNum" placeholder="ခုံနံပါတ်" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                <select id="studentStatus" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                     <option value="Present">Present</option>
                     <option value="Left">Left</option>
                 </select>
             </div>
-            <div class="subject-checkboxes mb-4">
-                <label><input type="checkbox" id="studentP" value="ပါ"> ပါ</label>
-                <label><input type="checkbox" id="studentTH" value="သီ"> သီ</label>
-                <label><input type="checkbox" id="studentN" value="ဏီ"> ဏီ</label>
-                <label><input type="checkbox" id="studentO" value="ဟ"> သစ်/ဟောင်း</label>
+            <div class="flex items-center gap-4 mb-4">
+                <label class="flex items-center gap-2"><input type="checkbox" id="studentP" value="ပါ" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-offset-0 focus:ring-indigo-200 focus:ring-opacity-50"> ပါ</label>
+                <label class="flex items-center gap-2"><input type="checkbox" id="studentTH" value="သီ" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-offset-0 focus:ring-indigo-200 focus:ring-opacity-50"> သီ</label>
+                <label class="flex items-center gap-2"><input type="checkbox" id="studentN" value="ဏီ" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-offset-0 focus:ring-indigo-200 focus:ring-opacity-50"> ဏီ</label>
+                <label class="flex items-center gap-2"><input type="checkbox" id="studentO" value="ဟ" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-offset-0 focus:ring-indigo-200 focus:ring-opacity-50"> သစ်/ဟောင်း</label>
             </div>
-            <div class="flex gap-4">
-                <button class="button button-primary" onclick="addStudent()">ကျောင်းသားသစ်ထည့်မည်</button>
-                <button class="button button-warning" onclick="updateStudent()">ကျောင်းသားပြင်ဆင်မည်</button>
-                <button class="button button-danger ml-auto" onclick="downloadCSV()">CSV ဖိုင်အသစ်ကို ဒေါင်းလုဒ်လုပ်ရန်</button>
+            <div class="flex flex-wrap gap-4">
+                <button onclick="addStudent()" class="px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 transition-colors">ကျောင်းသားသစ်ထည့်မည်</button>
+                <button onclick="updateStudent()" class="px-4 py-2 bg-yellow-500 text-white font-semibold rounded-lg shadow-md hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-opacity-75 transition-colors">ကျောင်းသားပြင်ဆင်မည်</button>
+                <button onclick="downloadCSV()" class="ml-auto px-4 py-2 bg-red-600 text-white font-semibold rounded-lg shadow-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-75 transition-colors">CSV ဖိုင်အသစ်ကို ဒေါင်းလုဒ်လုပ်ရန်</button>
             </div>
             <input type="hidden" id="editingIndex">
         </div>
 
-        <div class="card">
-            <div class="filter-container">
-                <input type="text" id="nameSearch" placeholder="နာမည်ဖြင့် ရှာရန်..." onkeyup="applyFilters()">
-                <select id="statusFilter" onChange="applyFilters()"><option value="present">လက်ရှိရှိသူများ</option><option value="left">ထွက်သွားသူများ</option><option value="all">အားလုံး</option></select>
-                <select id="classFilter" onChange="applyFilters()"><option value="">အတန်းအားလုံး</option></select>
-                <select id="schoolFilter" onChange="applyFilters()"><option value="">ကျောင်းအားလုံး</option></select>
-                <select id="subjectCountFilter" onChange="applyFilters()">
+        <!-- Filter Card -->
+        <div class="bg-white rounded-xl shadow-md p-6 mb-6 border border-gray-200">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-4 items-center">
+                <input type="text" id="nameSearch" placeholder="နာမည်ဖြင့် ရှာရန်..." onkeyup="applyFilters()" class="lg:col-span-2 w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                <select id="statusFilter" onChange="applyFilters()" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"><option value="present">လက်ရှိရှိသူများ</option><option value="left">ထွက်သွားသူများ</option><option value="all">အားလုံး</option></select>
+                <select id="classFilter" onChange="applyFilters()" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"><option value="">အတန်းအားလုံး</option></select>
+                <select id="schoolFilter" onChange="applyFilters()" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"><option value="">ကျောင်းအားလုံး</option></select>
+                <select id="subjectCountFilter" onChange="applyFilters()" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                     <option value="">ဘာသာရပ် အရေအတွက်</option>
                     <option value="4">၄ ဘာသာ</option> <option value="3">၃ ဘာသာ</option> <option value="2">၂ ဘာသာ</option> <option value="1">၁ ဘာသာ</option>
                     <option value="custom">ဘာသာရပ်ဖြင့်ရှာရန်</option>
                 </select>
-                <select id="customSubjectFilter" style="display:none;" onChange="applyFilters()">
+                <select id="customSubjectFilter" style="display:none;" onChange="applyFilters()" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                     <option value="">ဘာသာရပ် ရွေးပါ</option>
                     <option value="P">ပါ</option><option value="TH">သီ</option><option value="N">ဏီ</option><option value="O">သစ်/ဟောင်း</option>
                 </select>
-                <button class="button button-clear ml-auto" onclick="clearFilters()">ရှင်းလင်းမည်</button>
+                <button onclick="clearFilters()" class="w-full justify-center px-4 py-2 bg-gray-100 text-gray-700 font-semibold rounded-lg border border-gray-300 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-opacity-75 transition-colors">ရှင်းလင်းမည်</button>
+            </div>
+        </div>
+        
+        <!-- Table Card -->
+        <div class="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden">
+            <div class="overflow-x-auto">
+                <table id="mainTable" class="w-full text-sm text-left text-gray-600">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                        <tr>
+                            <th scope="col" class="px-6 py-3">စဉ်</th>
+                            <th scope="col" class="px-6 py-3">နာမည်</th>
+                            <th scope="col" class="px-6 py-3">အတန်း</th>
+                            <th scope="col" class="px-6 py-3">ကျောင်း</th>
+                            <th scope="col" class="px-6 py-3">ခုံနံပါတ်</th>
+                            <th scope="col" class="px-6 py-3 text-center">ပါ</th>
+                            <th scope="col" class="px-6 py-3 text-center">သီ</th>
+                            <th scope="col" class="px-6 py-3 text-center">ဏီ</th>
+                            <th scope="col" class="px-6 py-3 text-center">သစ်/ဟောင်း</th>
+                            <th id="actionsHeader" scope="col" class="px-6 py-3 hidden text-center">လုပ်ဆောင်ချက်</th>
+                        </tr>
+                    </thead>
+                    <tbody id="studentBody">
+                        <!-- Student rows will be inserted here -->
+                    </tbody>
+                </table>
             </div>
         </div>
 
-        <div class="card table-container">
-            <table id="mainTable">
-                <thead>
-                    <tr>
-                        <th>စဉ်</th><th>နာမည်</th><th>အတန်း</th><th>ကျောင်း</th><th>ခုံနံပါတ်</th><th>ပါ</th><th>သီ</th><th>ဏီ</th><th>သစ်/ဟောင်း</th>
-                        <th id="actionsHeader" style="display:none;">လုပ်ဆောင်ချက်</th>
-                    </tr>
-                </thead>
-                <tbody id="studentBody"></tbody>
-            </table>
+        <!-- Error Message Display -->
+        <div id="errorMessage" class="hidden mt-6 p-4 text-sm text-red-800 rounded-lg bg-red-100 border border-red-300"></div>
+        
+        <!-- Action Buttons -->
+        <div class="mt-6 flex flex-wrap gap-4">
+            <button onclick="copyTable()" class="px-5 py-2.5 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-75 transition-colors">လက်ရှိစာရင်းကို ကူးယူမည်</button>
+            <button id="adminButton" onclick="toggleAdminPanel()" class="px-5 py-2.5 bg-gray-600 text-white font-semibold rounded-lg shadow-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-75 transition-colors">Admin Panel</button>
         </div>
-
-        <div id="errorMessage" class="error" style="display: none;"></div>
-        <div class="mt-6">
-            <button class="button button-primary" onclick="copyTable()">လက်ရှိစာရင်းကို ကူးယူမည်</button>
-            <button class="button button-secondary" onclick="showAdminLogin()">Admin Panel</button>
+    </div>
+    
+    <!-- Custom Modal -->
+    <div id="customModal" class="hidden fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center p-4 z-50 transition-opacity duration-300">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-md p-6 transform transition-all scale-95 opacity-0" id="modalContent">
+            <h3 class="text-lg font-bold text-gray-900" id="modalTitle"></h3>
+            <div class="mt-4" id="modalBody">
+                <!-- Modal content goes here -->
+            </div>
+            <div class="mt-6 flex justify-end gap-3" id="modalFooter">
+                <!-- Modal buttons go here -->
+            </div>
         </div>
     </div>
 
+    <!-- Custom Toast Notification -->
+    <div id="toast" class="hidden fixed bottom-5 right-5 bg-gray-900 text-white py-2 px-5 rounded-lg shadow-lg transition-all duration-300 transform translate-y-10 opacity-0">
+        <p id="toastMessage"></p>
+    </div>
+
     <script>
+        // --- STATE MANAGEMENT ---
         let allData = [];
         let currentViewData = [];
         let isAdmin = false;
 
+        // --- DOM ELEMENT CONSTANTS ---
+        const DOM = {
+            yearSubtitle: document.getElementById('yearSubtitle'),
+            yearSelector: document.getElementById('yearSelector'),
+            totalCount: document.getElementById('totalCount'),
+            adminPanel: document.getElementById('adminPanel'),
+            adminButton: document.getElementById('adminButton'),
+            nameSearch: document.getElementById('nameSearch'),
+            statusFilter: document.getElementById('statusFilter'),
+            classFilter: document.getElementById('classFilter'),
+            schoolFilter: document.getElementById('schoolFilter'),
+            subjectCountFilter: document.getElementById('subjectCountFilter'),
+            customSubjectFilter: document.getElementById('customSubjectFilter'),
+            studentBody: document.getElementById('studentBody'),
+            actionsHeader: document.getElementById('actionsHeader'),
+            errorMessage: document.getElementById('errorMessage'),
+            // Admin Form
+            studentName: document.getElementById('studentName'),
+            studentClass: document.getElementById('studentClass'),
+            studentSchool: document.getElementById('studentSchool'),
+            studentCNum: document.getElementById('studentCNum'),
+            studentStatus: document.getElementById('studentStatus'),
+            studentP: document.getElementById('studentP'),
+            studentTH: document.getElementById('studentTH'),
+            studentN: document.getElementById('studentN'),
+            studentO: document.getElementById('studentO'),
+            editingIndex: document.getElementById('editingIndex'),
+            // Modal
+            customModal: document.getElementById('customModal'),
+            modalContent: document.getElementById('modalContent'),
+            modalTitle: document.getElementById('modalTitle'),
+            modalBody: document.getElementById('modalBody'),
+            modalFooter: document.getElementById('modalFooter'),
+            // Toast
+            toast: document.getElementById('toast'),
+            toastMessage: document.getElementById('toastMessage')
+        };
+        
+        // --- UTILITY FUNCTIONS ---
         const toBurmeseNumber = (num) => {
             if (num === undefined || num === null) return '';
             const burmeseNumerals = ['၀', '၁', '၂', '၃', '၄', '၅', '၆', '၇', '၈', '၉'];
@@ -154,7 +218,87 @@
             if (typeof name !== 'string' || !name.includes('-')) return name;
             return name.substring(name.indexOf('-') + 1);
         };
+        
+        // --- UI HELPER FUNCTIONS (MODAL & TOAST) ---
+        const ui = {
+            showToast: (message) => {
+                DOM.toastMessage.textContent = message;
+                DOM.toast.classList.remove('hidden');
+                setTimeout(() => {
+                    DOM.toast.classList.remove('opacity-0', 'translate-y-10');
+                }, 10);
+                setTimeout(() => {
+                    DOM.toast.classList.add('opacity-0', 'translate-y-10');
+                    setTimeout(() => DOM.toast.classList.add('hidden'), 300);
+                }, 2500);
+            },
+            showModal: () => {
+                DOM.customModal.classList.remove('hidden');
+                setTimeout(() => {
+                    DOM.customModal.classList.remove('opacity-0');
+                    DOM.modalContent.classList.remove('scale-95', 'opacity-0');
+                }, 10);
+            },
+            hideModal: () => {
+                DOM.customModal.classList.add('opacity-0');
+                DOM.modalContent.classList.add('scale-95', 'opacity-0');
+                setTimeout(() => {
+                    DOM.customModal.classList.add('hidden');
+                    // Clear modal content for next use
+                    DOM.modalTitle.innerHTML = '';
+                    DOM.modalBody.innerHTML = '';
+                    DOM.modalFooter.innerHTML = '';
+                }, 300);
+            },
+            alert: (title, message) => {
+                DOM.modalTitle.textContent = title;
+                DOM.modalBody.innerHTML = `<p class="text-sm text-gray-600">${message}</p>`;
+                DOM.modalFooter.innerHTML = `<button class="modal-ok-btn px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700">OK</button>`;
+                ui.showModal();
+                document.querySelector('.modal-ok-btn').onclick = ui.hideModal;
+            },
+            confirm: (title, message, callback) => {
+                DOM.modalTitle.textContent = title;
+                DOM.modalBody.innerHTML = `<p class="text-sm text-gray-600">${message}</p>`;
+                DOM.modalFooter.innerHTML = `
+                    <button class="modal-cancel-btn px-4 py-2 bg-gray-200 text-gray-800 font-semibold rounded-lg hover:bg-gray-300">မလုပ်တော့ပါ</button>
+                    <button class="modal-confirm-btn px-4 py-2 bg-red-600 text-white font-semibold rounded-lg shadow-md hover:bg-red-700">အတည်ပြုသည်</button>`;
+                ui.showModal();
+                document.querySelector('.modal-confirm-btn').onclick = () => {
+                    ui.hideModal();
+                    callback(true);
+                };
+                document.querySelector('.modal-cancel-btn').onclick = () => {
+                    ui.hideModal();
+                    callback(false);
+                };
+            },
+            prompt: (title, callback) => {
+                DOM.modalTitle.textContent = title;
+                DOM.modalBody.innerHTML = `<input type="password" id="modalInput" class="mt-2 w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">`;
+                DOM.modalFooter.innerHTML = `
+                    <button class="modal-cancel-btn px-4 py-2 bg-gray-200 text-gray-800 font-semibold rounded-lg hover:bg-gray-300">Cancel</button>
+                    <button class="modal-submit-btn px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700">Submit</button>`;
+                ui.showModal();
+                const input = document.getElementById('modalInput');
+                input.focus();
+                
+                const submit = () => {
+                    const value = input.value;
+                    ui.hideModal();
+                    callback(value);
+                };
 
+                input.onkeydown = (e) => { if(e.key === 'Enter') submit(); };
+                document.querySelector('.modal-submit-btn').onclick = submit;
+                document.querySelector('.modal-cancel-btn').onclick = () => {
+                    ui.hideModal();
+                    callback(null);
+                };
+            }
+        };
+
+        // --- DATA & TABLE RENDERING ---
         const populateDropdownWithCount = (element, data, key) => {
             const counts = data.reduce((acc, item) => {
                 const value = item[key];
@@ -169,86 +313,123 @@
                 element.add(new Option(`${displayName} (${burmeseCount} ပါး)`, item));
             });
         };
-
-        const loadStudents = (year) => {
-            document.getElementById('yearSubtitle').textContent = `${toBurmeseNumber(year)} ခုနှစ် သံဃာစာရင်း`;
-            allData = [];
-            clearFilters();
-            const tableBody = document.getElementById('studentBody');
-            tableBody.innerHTML = `<tr><td colspan="10" class="text-center text-gray-500 py-10">ဒေတာများကို တင်နေသည်...</td></tr>`;
-            const errorDiv = document.getElementById('errorMessage');
-            errorDiv.style.display = 'none';
-
-            const csvFile = `students-${year}.csv`;
-            
-            fetch(csvFile)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`"${csvFile}" ဖိုင်ကို ရှာမတွေ့ပါ။ GitHub တွင် ဖိုင်နာမည် မှန်ကန်မှု ရှိမရှိ စစ်ဆေးပါ။`);
-                    }
-                    return response.text();
-                })
-                .then(csvText => {
-                    Papa.parse(csvText, {
-                        header: true,
-                        skipEmptyLines: true,
-                        complete: (result) => {
-                            allData = result.data.map(row => ({
-                                Name: row.Name || '', Class: row.Class || '', School: row.School || '',
-                                C_Num: row.C_Num || '', P: row.P || '', TH: row.TH || '', N: row.N || '', O: row.O || '',
-                                Status: row.Status || 'Present'
-                            }));
-                            const presentStudents = allData.filter(s => s.Status.toLowerCase() !== 'left');
-                            populateDropdownWithCount(document.getElementById('classFilter'), presentStudents, 'Class');
-                            populateDropdownWithCount(document.getElementById('schoolFilter'), presentStudents, 'School');
-                            applyFilters();
-                        }
-                    });
-                })
-                .catch(error => {
-                    errorDiv.textContent = error.message;
-                    errorDiv.style.display = 'block';
-                    tableBody.innerHTML = `<tr><td colspan="10" class="text-center text-red-500 py-10">${error.message}</td></tr>`;
-                    document.getElementById('totalCount').innerHTML = '';
-                });
+        
+        const renderTableSkeleton = () => {
+            DOM.studentBody.innerHTML = Array(10).fill('').map(() => `
+                <tr class="animate-pulse">
+                    <td class="px-6 py-4"><div class="h-4 bg-gray-200 rounded"></div></td>
+                    <td class="px-6 py-4"><div class="h-4 bg-gray-200 rounded"></div></td>
+                    <td class="px-6 py-4"><div class="h-4 bg-gray-200 rounded"></div></td>
+                    <td class="px-6 py-4"><div class="h-4 bg-gray-200 rounded"></div></td>
+                    <td class="px-6 py-4"><div class="h-4 bg-gray-200 rounded"></div></td>
+                    <td class="px-6 py-4"><div class="h-4 w-6 mx-auto bg-gray-200 rounded"></div></td>
+                    <td class="px-6 py-4"><div class="h-4 w-6 mx-auto bg-gray-200 rounded"></div></td>
+                    <td class="px-6 py-4"><div class="h-4 w-6 mx-auto bg-gray-200 rounded"></div></td>
+                    <td class="px-6 py-4"><div class="h-4 w-6 mx-auto bg-gray-200 rounded"></div></td>
+                    ${isAdmin ? '<td class="px-6 py-4"><div class="h-8 bg-gray-200 rounded"></div></td>' : ''}
+                </tr>
+            `).join('');
         };
 
+        const renderTable = (data) => {
+            DOM.studentBody.innerHTML = '';
+            if (data.length === 0) {
+                DOM.studentBody.innerHTML = `<tr><td colspan="10" class="text-center text-gray-500 py-10">ရှာဖွေမှုနှင့် ကိုက်ညီသော အချက်အလက်များ မရှိပါ။</td></tr>`;
+                return;
+            }
+            data.forEach((student, index) => {
+                const originalIndex = allData.findIndex(s => s === student);
+                const row = document.createElement('tr');
+                row.className = 'bg-white border-b hover:bg-gray-50';
+                if (student.Status.toLowerCase() === 'left') row.classList.add('transferred-student');
+
+                let actionsCell = '';
+                if (isAdmin) {
+                    actionsCell = `
+                        <td class="px-6 py-4 text-center">
+                            <div class="flex gap-2 justify-center">
+                                <button onclick="editStudent(${originalIndex})" class="px-2 py-1 bg-yellow-400 text-white text-xs font-semibold rounded hover:bg-yellow-500">ပြင်ရန်</button>
+                                <button onclick="deleteStudent(${originalIndex})" class="px-2 py-1 bg-red-500 text-white text-xs font-semibold rounded hover:bg-red-600">ဖျက်ရန်</button>
+                            </div>
+                        </td>`;
+                }
+
+                row.innerHTML = `
+                    <td class="px-6 py-4">${toBurmeseNumber(index + 1)}</td>
+                    <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">${student.Name}</td>
+                    <td class="px-6 py-4">${formatDisplayName(student.Class)}</td>
+                    <td class="px-6 py-4">${formatDisplayName(student.School)}</td>
+                    <td class="px-6 py-4">${student.C_Num}</td>
+                    <td class="px-6 py-4 text-center">${student.P ? '✅' : '—'}</td>
+                    <td class="px-6 py-4 text-center">${student.TH ? '✅' : '—'}</td>
+                    <td class="px-6 py-4 text-center">${student.N ? '✅' : '—'}</td>
+                    <td class="px-6 py-4 text-center">${student.O ? '✅' : '—'}</td>
+                    ${actionsCell}
+                `;
+                DOM.studentBody.appendChild(row);
+            });
+            DOM.actionsHeader.classList.toggle('hidden', !isAdmin);
+        };
+        
+        const updateCounts = (data) => {
+            const total = data.length;
+            const monks = data.filter(s => !s.Name.startsWith('ရှင်')).length;
+            const novices = total - monks;
+            DOM.totalCount.innerHTML = `
+                <div class="count-item">
+                    <span class="text-sm text-gray-500">စုစုပေါင်း</span>
+                    <strong class="block text-3xl font-bold text-blue-800">${toBurmeseNumber(total)} ပါး</strong>
+                </div>
+                <div class="count-item">
+                    <span class="text-sm text-gray-500">ရဟန်း</span>
+                    <strong class="block text-3xl font-bold text-blue-800">${toBurmeseNumber(monks)} ပါး</strong>
+                </div>
+                <div class="count-item">
+                    <span class="text-sm text-gray-500">သာမဏေ</span>
+                    <strong class="block text-3xl font-bold text-blue-800">${toBurmeseNumber(novices)} ပါး</strong>
+                </div>`;
+        };
+
+        // --- CORE LOGIC ---
         const applyFilters = () => {
-            const nameSearchValue = document.getElementById('nameSearch').value.toLowerCase();
-            const statusFilterValue = document.getElementById('statusFilter').value;
-            const classFilterValue = document.getElementById('classFilter').value;
-            const schoolFilterValue = document.getElementById('schoolFilter').value;
-            const subjectCountFilterValue = document.getElementById('subjectCountFilter').value;
-            const customSubjectFilter = document.getElementById('customSubjectFilter');
-            const customSubjectValue = customSubjectFilter.value;
+            const filters = {
+                name: DOM.nameSearch.value.toLowerCase(),
+                status: DOM.statusFilter.value,
+                class: DOM.classFilter.value,
+                school: DOM.schoolFilter.value,
+                subjectCount: DOM.subjectCountFilter.value,
+                customSubject: DOM.customSubjectFilter.value
+            };
 
             let filteredData = allData.filter(student => {
                 let statusMatch = true;
-                if (statusFilterValue === 'present') statusMatch = student.Status.toLowerCase() !== 'left';
-                else if (statusFilterValue === 'left') statusMatch = student.Status.toLowerCase() === 'left';
+                if (filters.status === 'present') statusMatch = student.Status.toLowerCase() !== 'left';
+                else if (filters.status === 'left') statusMatch = student.Status.toLowerCase() === 'left';
 
                 let subjectMatch = true;
-                if (subjectCountFilterValue === 'custom' && customSubjectValue) {
-                    subjectMatch = !!student[customSubjectValue];
-                } else if (subjectCountFilterValue && subjectCountFilterValue !== 'custom') {
-                    const subjectCount = [student.P, student.TH, student.N, student.O].filter(Boolean).length;
-                    subjectMatch = subjectCount === parseInt(subjectCountFilterValue);
+                if (filters.subjectCount === 'custom' && filters.customSubject) {
+                    subjectMatch = !!student[filters.customSubject];
+                } else if (filters.subjectCount && filters.subjectCount !== 'custom') {
+                    const count = [student.P, student.TH, student.N, student.O].filter(Boolean).length;
+                    subjectMatch = count === parseInt(filters.subjectCount);
                 }
                 
                 return statusMatch &&
-                       (!nameSearchValue || student.Name.toLowerCase().includes(nameSearchValue)) &&
-                       (!classFilterValue || student.Class === classFilterValue) &&
-                       (!schoolFilterValue || student.School === schoolFilterValue) &&
-                       subjectMatch;
+                    (!filters.name || student.Name.toLowerCase().includes(filters.name)) &&
+                    (!filters.class || student.Class === filters.class) &&
+                    (!filters.school || student.School === filters.school) &&
+                    subjectMatch;
             });
 
             currentViewData = [...filteredData].sort((a, b) => {
                 const schoolA = a.School.split('-')[0];
                 const schoolB = b.School.split('-')[0];
                 if (schoolA !== schoolB) return schoolA.localeCompare(schoolB);
+                
                 const classA = a.Class.split('-')[0];
                 const classB = b.Class.split('-')[0];
                 if (classA !== classB) return classA.localeCompare(classB);
+                
                 const numA = parseInt(a.C_Num.replace(/\D/g,''), 10) || Infinity;
                 const numB = parseInt(b.C_Num.replace(/\D/g,''), 10) || Infinity;
                 return numA - numB;
@@ -256,73 +437,62 @@
 
             renderTable(currentViewData);
             updateCounts(currentViewData);
-            customSubjectFilter.style.display = (subjectCountFilterValue === 'custom') ? 'inline-block' : 'none';
+            DOM.customSubjectFilter.style.display = (filters.subjectCount === 'custom') ? 'inline-block' : 'none';
         };
 
-        const renderTable = (data) => {
-            const tableBody = document.getElementById('studentBody');
-            tableBody.innerHTML = '';
-            if (data.length === 0) {
-                tableBody.innerHTML = `<tr><td colspan="10" class="text-center text-gray-500 py-10">ရှာဖွေမှုနှင့် ကိုက်ညီသော အချက်အလက်များ မရှိပါ။</td></tr>`;
-                return;
-            }
-            data.forEach((student, index) => {
-                const originalIndex = allData.findIndex(s => s === student);
-                const row = document.createElement('tr');
-                if (student.Status.toLowerCase() === 'left') row.classList.add('transferred-student');
-                let actionsCell = '';
-                if (isAdmin) {
-                    actionsCell = `
-                        <td class="text-center-cell">
-                            <div class="flex gap-2 justify-center">
-                                <button class="button button-sm button-warning" onclick="editStudent(${originalIndex})">ပြင်ရန်</button>
-                                <button class="button button-sm button-danger" onclick="deleteStudent(${originalIndex})">ဖျက်ရန်</button>
-                            </div>
-                        </td>`;
+        const loadStudents = async (year) => {
+            DOM.yearSubtitle.textContent = `${toBurmeseNumber(year)} ခုနှစ် သံဃာစာရင်း`;
+            allData = [];
+            clearFilters();
+            renderTableSkeleton();
+            DOM.errorMessage.classList.add('hidden');
+            DOM.totalCount.innerHTML = '';
+
+            const csvFile = `students-${year}.csv`;
+            
+            try {
+                const response = await fetch(csvFile);
+                if (!response.ok) {
+                    throw new Error(`"${csvFile}" ဖိုင်ကို ရှာမတွေ့ပါ။ GitHub တွင် ဖိုင်နာမည် မှန်ကန်မှု ရှိမရှိ စစ်ဆေးပါ။`);
                 }
-                row.innerHTML = `
-                    <td>${toBurmeseNumber(index + 1)}</td>
-                    <td>${student.Name}</td>
-                    <td>${formatDisplayName(student.Class)}</td>
-                    <td>${formatDisplayName(student.School)}</td>
-                    <td>${student.C_Num}</td>
-                    <td class="text-center-cell">${student.P ? '✅' : '—'}</td>
-                    <td class="text-center-cell">${student.TH ? '✅' : '—'}</td>
-                    <td class="text-center-cell">${student.N ? '✅' : '—'}</td>
-                    <td class="text-center-cell">${student.O ? '✅' : '—'}</td>
-                    ${actionsCell}
-                `;
-                tableBody.appendChild(row);
-            });
-            document.getElementById('actionsHeader').style.display = isAdmin ? '' : 'none';
-        };
-
-        const updateCounts = (data) => {
-            const total = data.length;
-            const monks = data.filter(s => !s.Name.startsWith('ရှင်')).length;
-            const novices = total - monks;
-            document.getElementById('totalCount').innerHTML = `
-                <div class="count-item"><span>စုစုပေါင်း</span><strong>${toBurmeseNumber(total)} ပါး</strong></div>
-                <div class="count-item"><span>ရဟန်း</span><strong>${toBurmeseNumber(monks)} ပါး</strong></div>
-                <div class="count-item"><span>သာမဏေ</span><strong>${toBurmeseNumber(novices)} ပါး</strong></div>`;
+                const csvText = await response.text();
+                Papa.parse(csvText, {
+                    header: true,
+                    skipEmptyLines: true,
+                    complete: (result) => {
+                        allData = result.data.map(row => ({
+                            Name: row.Name || '', Class: row.Class || '', School: row.School || '',
+                            C_Num: row.C_Num || '', P: row.P || '', TH: row.TH || '', N: row.N || '', O: row.O || '',
+                            Status: row.Status || 'Present'
+                        }));
+                        const presentStudents = allData.filter(s => s.Status.toLowerCase() !== 'left');
+                        populateDropdownWithCount(DOM.classFilter, presentStudents, 'Class');
+                        populateDropdownWithCount(DOM.schoolFilter, presentStudents, 'School');
+                        applyFilters();
+                    }
+                });
+            } catch (error) {
+                DOM.errorMessage.textContent = error.message;
+                DOM.errorMessage.classList.remove('hidden');
+                DOM.studentBody.innerHTML = `<tr><td colspan="10" class="text-center text-red-500 py-10">${error.message}</td></tr>`;
+            }
         };
 
         const clearFilters = () => {
-            document.getElementById('nameSearch').value = '';
-            document.getElementById('statusFilter').value = 'present';
-            document.getElementById('classFilter').value = '';
-            document.getElementById('schoolFilter').value = '';
-            document.getElementById('subjectCountFilter').value = '';
-            document.getElementById('customSubjectFilter').value = '';
+            DOM.nameSearch.value = '';
+            DOM.statusFilter.value = 'present';
+            DOM.classFilter.value = '';
+            DOM.schoolFilter.value = '';
+            DOM.subjectCountFilter.value = '';
+            DOM.customSubjectFilter.value = '';
             applyFilters();
         };
 
         const copyTable = () => {
-            const year = document.getElementById('yearSelector').value;
-            const totalCountDiv = document.getElementById('totalCount');
-            const total = totalCountDiv.querySelector('.count-item:nth-child(1) strong').textContent;
-            const monks = totalCountDiv.querySelector('.count-item:nth-child(2) strong').textContent;
-            const novices = totalCountDiv.querySelector('.count-item:nth-child(3) strong').textContent;
+            const year = DOM.yearSelector.value;
+            const total = DOM.totalCount.querySelector('.count-item:nth-child(1) strong').textContent;
+            const monks = DOM.totalCount.querySelector('.count-item:nth-child(2) strong').textContent;
+            const novices = DOM.totalCount.querySelector('.count-item:nth-child(3) strong').textContent;
             
             let text = `${toBurmeseNumber(year)} ခုနှစ်၊ ညောင်တုန်းကျောင်းတိုက် သံဃာစာရင်း\n`;
             text += `(စုစုပေါင်း: ${total}, ရဟန်း: ${monks}, သာမဏေ: ${novices})\n\n`;
@@ -332,165 +502,165 @@
             
             currentViewData.forEach((student, index) => {
                 const cells = [
-                    toBurmeseNumber(index + 1),
-                    student.Name,
-                    formatDisplayName(student.Class),
-                    formatDisplayName(student.School),
-                    student.C_Num,
-                    student.P ? 'Yes' : 'No',
-                    student.TH ? 'Yes' : 'No',
-                    student.N ? 'Yes' : 'No',
-                    student.O ? 'Yes' : 'No'
+                    toBurmeseNumber(index + 1), student.Name, formatDisplayName(student.Class),
+                    formatDisplayName(student.School), student.C_Num,
+                    student.P ? 'Yes' : '-', student.TH ? 'Yes' : '-',
+                    student.N ? 'Yes' : '-', student.O ? 'Yes' : '-'
                 ];
                 text += cells.join('\t') + '\n';
             });
 
             navigator.clipboard.writeText(text)
-                .then(() => alert('လက်ရှိစာရင်းကို အောင်မြင်စွာ ကူးယူပြီးပါပြီ!'))
+                .then(() => ui.showToast('လက်ရှိစာရင်းကို အောင်မြင်စွာ ကူးယူပြီးပါပြီ!'))
                 .catch(err => {
                     console.error('Copy failed:', err);
-                    alert('စာရင်းကူးယူရာတွင် အမှားအယွင်းဖြစ်သွားပါသည်။');
+                    ui.alert('Error', 'စာရင်းကူးယူရာတွင် အမှားအယွင်းဖြစ်သွားပါသည်။');
                 });
         };
 
-        const showAdminLogin = () => {
+        // --- ADMIN LOGIC ---
+        const toggleAdminPanel = () => {
             if (isAdmin) {
                 isAdmin = false;
-                document.getElementById('adminPanel').style.display = 'none';
+                DOM.adminPanel.classList.add('hidden');
+                DOM.adminButton.textContent = 'Admin Panel';
+                DOM.adminButton.classList.replace('bg-red-600', 'bg-gray-600');
+                DOM.adminButton.classList.replace('hover:bg-red-700', 'hover:bg-gray-700');
                 clearAdminForm();
-                applyFilters();
+                applyFilters(); // Re-render table without admin actions
                 return;
             }
-            const password = prompt("Admin Password ကို ရိုက်ထည့်ပါ:");
-            if (password === "Ashin@135") {
-                isAdmin = true;
-                document.getElementById('adminPanel').style.display = 'block';
-                populateAdminDropdowns();
-                applyFilters();
-            } else if (password !== null) {
-                alert("Password မှားယွင်းနေပါသည်။");
-            }
+            ui.prompt("Admin Password ကို ရိုက်ထည့်ပါ:", (password) => {
+                if (password === "Ashin@135") {
+                    isAdmin = true;
+                    DOM.adminPanel.classList.remove('hidden');
+                    DOM.adminButton.textContent = 'Exit Admin Panel';
+                    DOM.adminButton.classList.replace('bg-gray-600', 'bg-red-600');
+                    DOM.adminButton.classList.replace('hover:bg-gray-700', 'hover:bg-red-700');
+                    populateAdminDropdowns();
+                    applyFilters(); // Re-render table with admin actions
+                } else if (password !== null) {
+                    ui.alert("Error", "Password မှားယွင်းနေပါသည်။");
+                }
+            });
         };
-
+        
         const populateAdminDropdowns = () => {
-            const classDropdown = document.getElementById('studentClass');
-            const schoolDropdown = document.getElementById('studentSchool');
-            
             const uniqueClasses = [...new Set(allData.map(s => s.Class).filter(Boolean))].sort();
             const uniqueSchools = [...new Set(allData.map(s => s.School).filter(Boolean))].sort();
 
-            while (classDropdown.options.length > 1) classDropdown.remove(1);
-            while (schoolDropdown.options.length > 1) schoolDropdown.remove(1);
+            while (DOM.studentClass.options.length > 1) DOM.studentClass.remove(1);
+            while (DOM.studentSchool.options.length > 1) DOM.studentSchool.remove(1);
 
-            uniqueClasses.forEach(cls => {
-                classDropdown.add(new Option(formatDisplayName(cls), cls));
-            });
-            uniqueSchools.forEach(school => {
-                schoolDropdown.add(new Option(formatDisplayName(school), school));
-            });
+            uniqueClasses.forEach(cls => DOM.studentClass.add(new Option(formatDisplayName(cls), cls)));
+            uniqueSchools.forEach(school => DOM.studentSchool.add(new Option(formatDisplayName(school), school)));
         };
 
         const clearAdminForm = () => {
-            document.getElementById('studentName').value = '';
-            document.getElementById('studentClass').value = '';
-            document.getElementById('studentSchool').value = '';
-            document.getElementById('studentCNum').value = '';
-            document.getElementById('studentStatus').value = 'Present';
-            document.getElementById('studentP').checked = false;
-            document.getElementById('studentTH').checked = false;
-            document.getElementById('studentN').checked = false;
-            document.getElementById('studentO').checked = false;
-            document.getElementById('editingIndex').value = '';
+            DOM.studentName.value = '';
+            DOM.studentClass.value = '';
+            DOM.studentSchool.value = '';
+            DOM.studentCNum.value = '';
+            DOM.studentStatus.value = 'Present';
+            DOM.studentP.checked = false;
+            DOM.studentTH.checked = false;
+            DOM.studentN.checked = false;
+            DOM.studentO.checked = false;
+            DOM.editingIndex.value = '';
         };
 
-        const getStudentDataFromForm = () => {
-            return {
-                Name: document.getElementById('studentName').value,
-                Class: document.getElementById('studentClass').value,
-                School: document.getElementById('studentSchool').value,
-                C_Num: document.getElementById('studentCNum').value,
-                P: document.getElementById('studentP').checked ? document.getElementById('studentP').value : '',
-                TH: document.getElementById('studentTH').checked ? document.getElementById('studentTH').value : '',
-                N: document.getElementById('studentN').checked ? document.getElementById('studentN').value : '',
-                O: document.getElementById('studentO').checked ? document.getElementById('studentO').value : '',
-                Status: document.getElementById('studentStatus').value
-            };
+        const getStudentDataFromForm = () => ({
+            Name: DOM.studentName.value.trim(),
+            Class: DOM.studentClass.value,
+            School: DOM.studentSchool.value,
+            C_Num: DOM.studentCNum.value.trim(),
+            P: DOM.studentP.checked ? DOM.studentP.value : '',
+            TH: DOM.studentTH.checked ? DOM.studentTH.value : '',
+            N: DOM.studentN.checked ? DOM.studentN.value : '',
+            O: DOM.studentO.checked ? DOM.studentO.value : '',
+            Status: DOM.studentStatus.value
+        });
+        
+        const refreshFilterDropdowns = () => {
+             const presentStudents = allData.filter(s => s.Status.toLowerCase() !== 'left');
+             populateDropdownWithCount(DOM.classFilter, presentStudents, 'Class');
+             populateDropdownWithCount(DOM.schoolFilter, presentStudents, 'School');
         };
 
         const addStudent = () => {
             const newStudent = getStudentDataFromForm();
             if (!newStudent.Name || !newStudent.Class || !newStudent.School) {
-                alert("နာမည်၊ အတန်း၊ နှင့် ကျောင်း အချက်အလက်များ လိုအပ်ပါသည်။");
+                ui.alert("Information Required", "နာမည်၊ အတန်း၊ နှင့် ကျောင်း အချက်အလက်များ လိုအပ်ပါသည်။");
                 return;
             }
             allData.push(newStudent);
             applyFilters();
-            const presentStudents = allData.filter(s => s.Status.toLowerCase() !== 'left');
-            populateDropdownWithCount(document.getElementById('classFilter'), presentStudents, 'Class');
-            populateDropdownWithCount(document.getElementById('schoolFilter'), presentStudents, 'School');
+            refreshFilterDropdowns();
             clearAdminForm();
+            ui.showToast('ကျောင်းသားသစ် ထည့်သွင်းပြီးပါပြီ။');
         };
 
         const editStudent = (index) => {
             const student = allData[index];
-            document.getElementById('studentName').value = student.Name;
-            document.getElementById('studentClass').value = student.Class;
-            document.getElementById('studentSchool').value = student.School;
-            document.getElementById('studentCNum').value = student.C_Num;
-            document.getElementById('studentStatus').value = student.Status;
-            document.getElementById('studentP').checked = !!student.P;
-            document.getElementById('studentTH').checked = !!student.TH;
-            document.getElementById('studentN').checked = !!student.N;
-            document.getElementById('studentO').checked = !!student.O;
-            document.getElementById('editingIndex').value = index;
-            window.scrollTo(0, 0);
+            DOM.studentName.value = student.Name;
+            DOM.studentClass.value = student.Class;
+            DOM.studentSchool.value = student.School;
+            DOM.studentCNum.value = student.C_Num;
+            DOM.studentStatus.value = student.Status;
+            DOM.studentP.checked = !!student.P;
+            DOM.studentTH.checked = !!student.TH;
+            DOM.studentN.checked = !!student.N;
+            DOM.studentO.checked = !!student.O;
+            DOM.editingIndex.value = index;
+            DOM.adminPanel.scrollIntoView({ behavior: 'smooth' });
+            DOM.studentName.focus();
         };
 
         const updateStudent = () => {
-            const index = document.getElementById('editingIndex').value;
+            const index = DOM.editingIndex.value;
             if (index === '') {
-                alert("ပြင်ဆင်ရန် ကျောင်းသားတစ်ဦးကို ရွေးချယ်ထားခြင်းမရှိပါ။ 'ပြင်ရန်' ခလုတ်ကို အရင်နှိပ်ပါ။");
+                ui.alert("No Student Selected", "ပြင်ဆင်ရန် ကျောင်းသားတစ်ဦးကို ရွေးချယ်ထားခြင်းမရှိပါ။ 'ပြင်ရန်' ခလုတ်ကို အရင်နှိပ်ပါ။");
                 return;
             }
             allData[index] = getStudentDataFromForm();
             applyFilters();
-            const presentStudents = allData.filter(s => s.Status.toLowerCase() !== 'left');
-            populateDropdownWithCount(document.getElementById('classFilter'), presentStudents, 'Class');
-            populateDropdownWithCount(document.getElementById('schoolFilter'), presentStudents, 'School');
+            refreshFilterDropdowns();
             clearAdminForm();
+            ui.showToast('ကျောင်းသားအချက်အလက် ပြင်ဆင်ပြီးပါပြီ။');
         };
 
         const deleteStudent = (index) => {
-            if (confirm(`"${allData[index].Name}" ၏ စာရင်းကို အမှန်တကယ် ဖျက်မှာလား?`)) {
-                allData.splice(index, 1);
-                applyFilters();
-                const presentStudents = allData.filter(s => s.Status.toLowerCase() !== 'left');
-                populateDropdownWithCount(document.getElementById('classFilter'), presentStudents, 'Class');
-                populateDropdownWithCount(document.getElementById('schoolFilter'), presentStudents, 'School');
-            }
+            const studentName = allData[index].Name;
+            ui.confirm('အတည်ပြုပါ', `"${studentName}" ၏ စာရင်းကို အမှန်တကယ် ဖျက်မှာလား?`, (confirmed) => {
+                if (confirmed) {
+                    allData.splice(index, 1);
+                    applyFilters();
+                    refreshFilterDropdowns();
+                    ui.showToast(`"${studentName}" ၏ စာရင်းကို ဖျက်လိုက်ပါပြီ။`);
+                }
+            });
         };
 
         const downloadCSV = () => {
-            const year = document.getElementById('yearSelector').value;
+            const year = DOM.yearSelector.value;
             const csvContent = Papa.unparse(allData, { header: true });
             const blob = new Blob([`\uFEFF${csvContent}`], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement("a");
-            const url = URL.createObjectURL(blob);
-            link.setAttribute("href", url);
-            link.setAttribute("download", `students-${year}.csv`);
-            link.style.visibility = 'hidden';
+            link.href = URL.createObjectURL(blob);
+            link.download = `students-${year}.csv`;
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
         };
 
+        // --- EVENT LISTENERS ---
         document.addEventListener('DOMContentLoaded', () => {
-            const yearSelector = document.getElementById('yearSelector');
-            loadStudents(yearSelector.value);
-            yearSelector.addEventListener('change', (event) => {
+            loadStudents(DOM.yearSelector.value);
+            DOM.yearSelector.addEventListener('change', (event) => {
                 loadStudents(event.target.value);
             });
         });
+
     </script>
 </body>
 </html>
