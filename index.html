@@ -44,7 +44,6 @@
         }
         @keyframes rotation { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
-        /* --- Mobile Responsive Table CSS --- */
         @media (max-width: 800px) {
             thead { display: none; }
             tr { display: block; border: 1px solid var(--border-color); border-radius: 0.75rem; padding: 1rem; margin-bottom: 1rem; }
@@ -82,23 +81,38 @@
         
         <section class="card rounded-lg p-6 mb-6 grid grid-cols-1 sm:grid-cols-3 gap-4 text-center" id="totalCount"></section>
 
-        <!-- Filter Button for Mobile -->
-        <section class="mb-6">
-            <button id="openFilterBtn" class="button w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-md flex items-center justify-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L13 10.414V15a1 1 0 01-.293.707l-2 2A1 1 0 019 17v-6.586L4.293 6.707A1 1 0 014 6V3z" clip-rule="evenodd" /></svg>
-                <span>စစ်ထုတ်ရန်</span>
-            </button>
+        <section class="card rounded-lg p-4 mb-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4 items-center">
+                <input type="text" id="nameSearch" placeholder="နာမည်ဖြင့် ရှာရန်..." class="lg:col-span-2 rounded-md w-full border p-2">
+                <select id="statusFilter" class="rounded-md w-full border p-2"><option value="present">လက်ရှိရှိသူများ</option><option value="left">ထွက်သွားသူများ</option><option value="all">အားလုံး</option></select>
+                <select id="classFilter" class="rounded-md w-full border p-2"><option value="">အတန်းအားလုံး</option></select>
+                <select id="schoolFilter" class="rounded-md w-full border p-2"><option value="">ကျောင်းအားလုံး</option></select>
+                
+                <div class="relative lg:col-span-1">
+                    <button id="subjectFilterBtn" type="button" class="w-full text-left border rounded-md shadow-sm px-4 py-2 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700">
+                        ဘာသာရပ်များ
+                    </button>
+                    <div id="subjectCheckboxPanel" class="hidden absolute z-10 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 p-4 space-y-2">
+                        <label class="flex items-center"><input type="checkbox" data-subject="P" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 mr-2"> ပါ</label>
+                        <label class="flex items-center"><input type="checkbox" data-subject="TH" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 mr-2"> သီ</label>
+                        <label class="flex items-center"><input type="checkbox" data-subject="N" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 mr-2"> ဏီ</label>
+                        <label class="flex items-center"><input type="checkbox" data-subject="O" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 mr-2"> သစ်/ဟောင်း</label>
+                    </div>
+                </div>
+
+                <button id="clearFiltersBtn" class="bg-gray-200 dark:bg-gray-600 hover:bg-gray-300 dark:hover:bg-gray-500 text-sm font-bold py-2 px-4 rounded-md">ရှင်းလင်းမည်</button>
+            </div>
         </section>
 
         <main class="card rounded-lg overflow-x-auto">
              <table class="w-full min-w-[800px]">
-                 <thead>
-                     <tr>
-                         <th class="p-4 text-left">စဉ်</th><th class="p-4 text-left">နာမည်</th><th class="p-4 text-left">အတန်း</th><th class="p-4 text-left">ကျောင်း</th><th class="p-4 text-left">ခုံနံပါတ်</th><th class="p-4">ပါ</th><th class="p-4">သီ</th><th class="p-4">ဏီ</th><th class="p-4">သစ်/ဟောင်း</th>
-                     </tr>
-                 </thead>
-                 <tbody id="studentBody"></tbody>
-             </table>
+                <thead>
+                    <tr>
+                        <th class="p-4 text-left">စဉ်</th><th class="p-4 text-left">နာမည်</th><th class="p-4 text-left">အတန်း</th><th class="p-4 text-left">ကျောင်း</th><th class="p-4 text-left">ခုံနံပါတ်</th><th class="p-4">ပါ</th><th class="p-4">သီ</th><th class="p-4">ဏီ</th><th class="p-4">သစ်/ဟောင်း</th>
+                    </tr>
+                </thead>
+                <tbody id="studentBody"></tbody>
+            </table>
         </main>
         
         <footer class="mt-6 flex flex-wrap gap-4 items-center">
@@ -111,37 +125,6 @@
                  </button>
              </div>
         </footer>
-    </div>
-
-    <!-- Filter Modal (Initially Hidden) -->
-    <div id="filterModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center p-4">
-        <div class="card rounded-lg p-6 w-full max-w-md">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-xl font-bold">စစ်ထုတ်ရန်</h3>
-                <button id="closeFilterBtn" class="text-2xl font-bold leading-none p-1 hover:text-red-500">&times;</button>
-            </div>
-            
-            <div class="grid grid-cols-1 gap-4 items-center">
-                <input type="text" id="nameSearch" placeholder="နာမည်ဖြင့် ရှာရန်..." class="rounded-md w-full border p-2">
-                <select id="statusFilter" class="rounded-md w-full border p-2"><option value="present">လက်ရှိရှိသူများ</option><option value="left">ထွက်သွားသူများ</option><option value="all">အားလုံး</option></select>
-                <select id="classFilter" class="rounded-md w-full border p-2"><option value="">အတန်းအားလုံး</option></select>
-                <select id="schoolFilter" class="rounded-md w-full border p-2"><option value="">ကျောင်းအားလုံး</option></select>
-                
-                <div class="relative">
-                    <button id="subjectFilterBtn" type="button" class="w-full text-left border rounded-md shadow-sm px-4 py-2 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700">
-                        ဘာသာရပ်များ
-                    </button>
-                    <div id="subjectCheckboxPanel" class="hidden absolute z-10 mt-2 w-full rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 p-4 space-y-2">
-                        <label class="flex items-center"><input type="checkbox" data-subject="P" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 mr-2"> ပါ</label>
-                        <label class="flex items-center"><input type="checkbox" data-subject="TH" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 mr-2"> သီ</label>
-                        <label class="flex items-center"><input type="checkbox" data-subject="N" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 mr-2"> ဏီ</label>
-                        <label class="flex items-center"><input type="checkbox" data-subject="O" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 mr-2"> သစ်/ဟောင်း</label>
-                    </div>
-                </div>
-
-                <button id="clearFiltersBtn" class="bg-gray-200 dark:bg-gray-600 hover:bg-gray-300 dark:hover:bg-gray-500 text-sm font-bold py-2 px-4 rounded-md">ရှင်းလင်းမည်</button>
-            </div>
-        </div>
     </div>
 
 <script>
@@ -183,10 +166,6 @@
             themeToggle: document.getElementById('theme-toggle'),
             themeDarkIcon: document.getElementById('theme-toggle-dark-icon'),
             themeLightIcon: document.getElementById('theme-toggle-light-icon'),
-            // Modal Elements
-            openFilterBtn: document.getElementById('openFilterBtn'),
-            closeFilterBtn: document.getElementById('closeFilterBtn'),
-            filterModal: document.getElementById('filterModal'),
         };
 
         // --- 4. UI RENDERING ---
@@ -217,10 +196,10 @@
                 
                 row.innerHTML = `
                     <td data-label="စဉ်" class="p-4">${toBurmeseNumber(index + 1)}</td>
-                    <td data-label="နာမည်" class="p-4">${student.Name}</td>
-                    <td data-label="အတန်း" class="p-4">${formatDisplayName(student.Class)}</td>
-                    <td data-label="ကျောင်း" class="p-4">${formatDisplayName(student.School)}</td>
-                    <td data-label="ခုံနံပါတ်" class="p-4">${student.C_Num}</td>
+                    <td data-label="နာမည်" class="p-4">${student.Name || ''}</td>
+                    <td data-label="အတန်း" class="p-4">${formatDisplayName(student.Class) || ''}</td>
+                    <td data-label="ကျောင်း" class="p-4">${formatDisplayName(student.School) || ''}</td>
+                    <td data-label="ခုံနံပါတ်" class="p-4">${student.C_Num || ''}</td>
                     <td data-label="ပါ" class="p-4 text-center">${student.P ? '✅' : '—'}</td>
                     <td data-label="သီ" class="p-4 text-center">${student.TH ? '✅' : '—'}</td>
                     <td data-label="ဏီ" class="p-4 text-center">${student.N ? '✅' : '—'}</td>
@@ -268,9 +247,8 @@
                                     (status === 'present' && (!student.Status || student.Status.toLowerCase() !== 'left')) ||
                                     (status === 'left' && student.Status && student.Status.toLowerCase() === 'left');
 
-                const studentSubjectCount = [student.P, student.TH, student.N, student.O].filter(Boolean).length;
-                const subjectMatch = selectedSubjects.length === 0 || 
-                                     (studentSubjectCount === selectedSubjects.length && selectedSubjects.every(subjectKey => student[subjectKey]));
+                // ✅ **FIXED**: Changed subject filter logic to be inclusive ('AND') instead of exclusive.
+                const subjectMatch = selectedSubjects.length === 0 || selectedSubjects.every(subjectKey => student[subjectKey]);
 
                 return statusMatch && subjectMatch &&
                     (!name || (student.Name && student.Name.toLowerCase().includes(name.toLowerCase()))) &&
@@ -295,6 +273,37 @@
             state.currentViewData = filtered;
             render();
         };
+        
+        const copyVisibleTableToClipboard = () => {
+            const headers = ['စဉ်', 'နာမည်', 'အတန်း', 'ကျောင်း', 'ခုံနံပါတ်', 'ပါ', 'သီ', 'ဏီ', 'သစ်/ဟောင်း'];
+            let tableString = headers.join('\t') + '\n';
+
+            state.currentViewData.forEach((student, index) => {
+                const row = [
+                    index + 1,
+                    student.Name || '',
+                    formatDisplayName(student.Class) || '',
+                    formatDisplayName(student.School) || '',
+                    student.C_Num || '',
+                    student.P ? 'Yes' : '',
+                    student.TH ? 'Yes' : '',
+                    student.N ? 'Yes' : '',
+                    student.O ? 'Yes' : ''
+                ];
+                tableString += row.join('\t') + '\n';
+            });
+
+            navigator.clipboard.writeText(tableString).then(() => {
+                const originalText = DOMElements.copyTableBtn.textContent;
+                DOMElements.copyTableBtn.textContent = 'ကူးယူပြီးပါပြီ။ ✅';
+                setTimeout(() => {
+                    DOMElements.copyTableBtn.textContent = originalText;
+                }, 2000);
+            }).catch(err => {
+                console.error('Could not copy text: ', err);
+                alert('ကူးယူရာတွင် အမှားဖြစ်ပွားပါသည်။');
+            });
+        };
 
         const loadStudents = async (year) => {
             state.isLoading = true;
@@ -316,20 +325,12 @@
                     throw new Error(`"${csvFile}" ဖိုင်ကို ဖတ်နိုင်သော်လည်း data မပါဝင်ပါ။ ဖိုင်ထဲတွင် data အမှန်တကယ်ရှိမရှိနှင့် Network tab တွင် server က HTML code များ မှားပို့နေသလား စစ်ဆေးပါ။`);
                 }
 
-                state.allData = result.data.map(d => ({
-                    ...d,
-                    P: String(d.P || '').toUpperCase() === 'TRUE' || d.P === '1',
-                    TH: String(d.TH || '').toUpperCase() === 'TRUE' || d.TH === '1',
-                    N: String(d.N || '').toUpperCase() === 'TRUE' || d.N === '1',
-                    O: String(d.O || '').toUpperCase() === 'TRUE' || d.O === '1',
-                }));
-
+                state.allData = result.data;
                 const presentStudents = state.allData.filter(s => !s.Status || s.Status.toLowerCase() !== 'left');
                 populateDropdownWithCount(DOMElements.classFilter, presentStudents, 'Class');
                 populateDropdownWithCount(DOMElements.schoolFilter, presentStudents, 'School');
                 
-            } catch (error)
-{
+            } catch (error) {
                 state.allData = [];
                 if(DOMElements.studentBody) DOMElements.studentBody.innerHTML = `<tr><td colspan="9" class="text-center text-red-500 py-10 font-bold">${error.message}</td></tr>`;
                 console.error(error);
@@ -365,6 +366,9 @@
                 handleFilterChange();
             });
 
+            // ✅ **ADDED**: Event listener for the copy button.
+            if(DOMElements.copyTableBtn) DOMElements.copyTableBtn.addEventListener('click', copyVisibleTableToClipboard);
+
             // Subject Filter Panel
             if (DOMElements.subjectFilterBtn) DOMElements.subjectFilterBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
@@ -397,32 +401,11 @@
                     applyTheme(!isDarkNow);
                 });
             }
-
-            // --- NEW: Filter Modal Logic ---
-            if (DOMElements.openFilterBtn) {
-                DOMElements.openFilterBtn.addEventListener('click', () => {
-                    if(DOMElements.filterModal) DOMElements.filterModal.classList.remove('hidden', 'opacity-0');
-                    if(DOMElements.filterModal) DOMElements.filterModal.classList.add('flex');
-                });
-            }
-            if (DOMElements.closeFilterBtn) {
-                DOMElements.closeFilterBtn.addEventListener('click', () => {
-                    if(DOMElements.filterModal) DOMElements.filterModal.classList.add('hidden');
-                    if(DOMElements.filterModal) DOMElements.filterModal.classList.remove('flex');
-                });
-            }
-            if (DOMElements.filterModal) {
-                DOMElements.filterModal.addEventListener('click', (e) => {
-                    if (e.target === DOMElements.filterModal) {
-                        DOMElements.filterModal.classList.add('hidden');
-                        DOMElements.filterModal.classList.remove('flex');
-                    }
-                });
-            }
         };
 
         // --- 6. INITIALIZATION ---
         document.addEventListener('DOMContentLoaded', () => {
+            // Check if essential elements exist before running
             if (!DOMElements.studentBody || !DOMElements.yearSelector) {
                 console.error("Essential DOM elements not found. Script cannot run.");
                 return;
@@ -435,4 +418,3 @@
 </script>
 </body>
 </html>
-
