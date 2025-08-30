@@ -247,7 +247,11 @@
                                     (status === 'present' && (!student.Status || student.Status.toLowerCase() !== 'left')) ||
                                     (status === 'left' && student.Status && student.Status.toLowerCase() === 'left');
 
-                const subjectMatch = selectedSubjects.length === 0 || selectedSubjects.every(subjectKey => student[subjectKey]);
+                // START: Exact Match Logic
+                const studentSubjectCount = [student.P, student.TH, student.N, student.O].filter(Boolean).length;
+                const subjectMatch = selectedSubjects.length === 0 || 
+                                     (studentSubjectCount === selectedSubjects.length && selectedSubjects.every(subjectKey => student[subjectKey]));
+                // END: Exact Match Logic
 
                 return statusMatch && subjectMatch &&
                     (!name || (student.Name && student.Name.toLowerCase().includes(name.toLowerCase()))) &&
