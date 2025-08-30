@@ -44,14 +44,42 @@
         }
         @keyframes rotation { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
+        /* --- Responsive Styles for Mobile View --- */
         @media (max-width: 800px) {
-            thead { display: none; }
-            tr { display: block; border: 1px solid var(--border-color); border-radius: 0.75rem; padding: 1rem; margin-bottom: 1rem; }
-            td { display: block; text-align: right; padding-left: 50%; position: relative; border-bottom: 1px dotted var(--border-color); }
-            td:last-child { border-bottom: none; }
+            .filter-grid {
+                grid-template-columns: 1fr; /* Stack filters vertically */
+            }
+
+            thead { 
+                display: none; /* Hide table header on mobile */
+            }
+            tr { 
+                display: block; 
+                border: 1px solid var(--border-color); 
+                border-radius: 0.75rem; 
+                padding: 1rem; 
+                margin-bottom: 1rem; 
+                box-shadow: 0 1px 2px 0 var(--shadow-color);
+            }
+            td { 
+                display: block; 
+                text-align: right; 
+                padding: 0.5rem 0; /* Adjust padding */
+                padding-left: 50%;
+                position: relative; /* <<< THIS IS THE MAIN FIX */
+                border-bottom: 1px dotted var(--border-color); 
+            }
+            td:last-child { 
+                border-bottom: none; 
+            }
             td::before {
-                content: attr(data-label); position: absolute; left: 1rem; font-weight: bold;
-                text-align: left; white-space: nowrap; color: var(--text-secondary);
+                content: attr(data-label); 
+                position: absolute; 
+                left: 0; /* Adjust position */
+                font-weight: bold;
+                text-align: left; 
+                white-space: nowrap; 
+                color: var(--text-secondary);
             }
         }
     </style>
@@ -82,7 +110,7 @@
         <section class="card rounded-lg p-6 mb-6 grid grid-cols-1 sm:grid-cols-3 gap-4 text-center" id="totalCount"></section>
 
         <section class="card rounded-lg p-4 mb-6">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4 items-center">
+            <div class="filter-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4 items-center">
                 <input type="text" id="nameSearch" placeholder="နာမည်ဖြင့် ရှာရန်..." class="lg:col-span-2 rounded-md w-full border p-2">
                 <select id="statusFilter" class="rounded-md w-full border p-2"><option value="present">လက်ရှိရှိသူများ</option><option value="left">ထွက်သွားသူများ</option><option value="all">အားလုံး</option></select>
                 <select id="classFilter" class="rounded-md w-full border p-2"><option value="">အတန်းအားလုံး</option></select>
@@ -247,11 +275,9 @@
                                     (status === 'present' && (!student.Status || student.Status.toLowerCase() !== 'left')) ||
                                     (status === 'left' && student.Status && student.Status.toLowerCase() === 'left');
 
-                // START: Exact Match Logic
                 const studentSubjectCount = [student.P, student.TH, student.N, student.O].filter(Boolean).length;
                 const subjectMatch = selectedSubjects.length === 0 || 
                                      (studentSubjectCount === selectedSubjects.length && selectedSubjects.every(subjectKey => student[subjectKey]));
-                // END: Exact Match Logic
 
                 return statusMatch && subjectMatch &&
                     (!name || (student.Name && student.Name.toLowerCase().includes(name.toLowerCase()))) &&
@@ -338,7 +364,6 @@
                 handleFilterChange();
             });
 
-            // Subject Filter Panel
             if (DOMElements.subjectFilterBtn) DOMElements.subjectFilterBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
                 if(DOMElements.subjectCheckboxPanel) DOMElements.subjectCheckboxPanel.classList.toggle('hidden');
@@ -355,7 +380,6 @@
                 }
             });
 
-            // Theme Toggle
             if (DOMElements.themeToggle) {
                 const applyTheme = (isDark) => {
                     document.documentElement.classList.toggle('dark', isDark);
@@ -374,7 +398,6 @@
 
         // --- 6. INITIALIZATION ---
         document.addEventListener('DOMContentLoaded', () => {
-            // Check if essential elements exist before running
             if (!DOMElements.studentBody || !DOMElements.yearSelector) {
                 console.error("Essential DOM elements not found. Script cannot run.");
                 return;
