@@ -364,9 +364,9 @@
                 const statusMatch = status === 'all' || 
                     (status === 'present' && (!student.Status || student.Status.toLowerCase() !== 'left')) || 
                     (status === 'left' && student.Status && student.Status.toLowerCase() === 'left');
-                const studentSubjectCount = [student.P, student.TH, student.N, student.O].filter(Boolean).length;
-                const subjectMatch = selectedSubjects.length === 0 || 
-                    (studentSubjectCount === selectedSubjects.length && selectedSubjects.every(subjectKey => student[subjectKey]));
+                
+                const subjectMatch = selectedSubjects.length === 0 || selectedSubjects.every(subjectKey => student[subjectKey]);
+
                 return statusMatch && subjectMatch &&
                     (!name || (student.Name && student.Name.toLowerCase().includes(name.toLowerCase()))) &&
                     (!classFilter || student.Class === classFilter) &&
@@ -634,8 +634,8 @@
             });
 
             addSafeListener(document, 'click', (e) => {
-                if (!DOMElements.subjectCheckboxPanel.contains(e.target) && 
-                    !DOMElements.subjectFilterBtn.contains(e.target)) {
+                if (DOMElements.subjectCheckboxPanel && !DOMElements.subjectCheckboxPanel.contains(e.target) && 
+                    DOMElements.subjectFilterBtn && !DOMElements.subjectFilterBtn.contains(e.target)) {
                     DOMElements.subjectCheckboxPanel.classList.add('hidden');
                 }
             });
