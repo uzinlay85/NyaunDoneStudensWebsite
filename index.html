@@ -14,7 +14,7 @@
         body { font-family: 'Pyidaungsu', sans-serif; background-color: #f9fafb; color: #374151; }
         .container { max-width: 1280px; margin: auto; padding: 2rem; }
         .header { text-align: center; margin-bottom: 1rem; }
-        .card { background-color: #ffffff; border-radius: 0.75rem; border: 1px solid #e5e7eb; padding: 1.5rem; box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05  ); margin-bottom: 1.5rem; }
+        .card { background-color: #ffffff; border-radius: 0.75rem; border: 1px solid #e5e7eb; padding: 1.5rem; box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05 ); margin-bottom: 1.5rem; }
         .table-container { overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; min-width: 800px; }
         th, td { padding: 1rem 1.5rem; text-align: left; border-bottom: 1px solid #e5e7eb; vertical-align: middle; }
@@ -242,17 +242,29 @@
                        subjectMatch;
             });
 
-            currentViewData = [...filteredData].sort((a, b) => {
-                const schoolA = a.School.split('-')[0];
-                const schoolB = b.School.split('-')[0];
-                if (schoolA !== schoolB) return schoolA.localeCompare(schoolB);
-                const classA = a.Class.split('-')[0];
-                const classB = b.Class.split('-')[0];
-                if (classA !== classB) return classA.localeCompare(classB);
-                const numA = parseInt(a.C_Num.replace(/\D/g,''), 10) || Infinity;
-                const numB = parseInt(b.C_Num.replace(/\D/g,''), 10) || Infinity;
-                return numA - numB;
-            });
+            // ===== ပြင်ဆင်ထားသော Sorting အပိုင်း =====
+            if (classFilterValue) {
+                // အတန်းတစ်ခုခုကို ရွေးထားပါက ခုံနံပါတ်အလိုက်သာ စီပါမည်။
+                currentViewData = [...filteredData].sort((a, b) => {
+                    const numA = parseInt(a.C_Num.replace(/\D/g,''), 10) || Infinity;
+                    const numB = parseInt(b.C_Num.replace(/\D/g,''), 10) || Infinity;
+                    return numA - numB;
+                });
+            } else {
+                // မဟုတ်ပါက မူလအတိုင်း ကျောင်း၊ အတန်း၊ ခုံနံပါတ် အစဉ်လိုက်စီပါမည်။
+                currentViewData = [...filteredData].sort((a, b) => {
+                    const schoolA = a.School.split('-')[0];
+                    const schoolB = b.School.split('-')[0];
+                    if (schoolA !== schoolB) return schoolA.localeCompare(schoolB);
+                    const classA = a.Class.split('-')[0];
+                    const classB = b.Class.split('-')[0];
+                    if (classA !== classB) return classA.localeCompare(classB);
+                    const numA = parseInt(a.C_Num.replace(/\D/g,''), 10) || Infinity;
+                    const numB = parseInt(b.C_Num.replace(/\D/g,''), 10) || Infinity;
+                    return numA - numB;
+                });
+            }
+            // ===== Sorting အပိုင်း ပြီးဆုံးပါပြီ =====
 
             renderTable(currentViewData);
             updateCounts(currentViewData);
