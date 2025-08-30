@@ -247,7 +247,6 @@
                                     (status === 'present' && (!student.Status || student.Status.toLowerCase() !== 'left')) ||
                                     (status === 'left' && student.Status && student.Status.toLowerCase() === 'left');
 
-                // ✅ **FIXED**: Changed subject filter logic to be inclusive ('AND') instead of exclusive.
                 const subjectMatch = selectedSubjects.length === 0 || selectedSubjects.every(subjectKey => student[subjectKey]);
 
                 return statusMatch && subjectMatch &&
@@ -366,8 +365,27 @@
                 handleFilterChange();
             });
 
-            // ✅ **ADDED**: Event listener for the copy button.
             if(DOMElements.copyTableBtn) DOMElements.copyTableBtn.addEventListener('click', copyVisibleTableToClipboard);
+
+            // ✅ **ADDED**: Event listener and logic for the Admin button.
+            if(DOMElements.adminBtn) {
+                DOMElements.adminBtn.addEventListener('click', () => {
+                    const password = prompt("Admin စကားဝှက်ကို ထည့်ပါ:", "");
+                    // You can change the password here.
+                    const correctPassword = "nytdb_admin_2025"; 
+
+                    if (password === null) return; // User cancelled the prompt
+
+                    if (password === correctPassword) {
+                        const currentYear = DOMElements.yearSelector.value;
+                        const csvFile = `students-${currentYear}.csv`;
+                        alert(`Data file (${csvFile}) ကို tab အသစ်တွင် ဖွင့်ပါမည်။`);
+                        window.open(csvFile, '_blank');
+                    } else {
+                        alert("စကားဝှက် မှားယွင်းနေပါသည်။");
+                    }
+                });
+            }
 
             // Subject Filter Panel
             if (DOMElements.subjectFilterBtn) DOMElements.subjectFilterBtn.addEventListener('click', (e) => {
@@ -405,7 +423,6 @@
 
         // --- 6. INITIALIZATION ---
         document.addEventListener('DOMContentLoaded', () => {
-            // Check if essential elements exist before running
             if (!DOMElements.studentBody || !DOMElements.yearSelector) {
                 console.error("Essential DOM elements not found. Script cannot run.");
                 return;
