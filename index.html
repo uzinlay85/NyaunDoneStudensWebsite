@@ -44,7 +44,7 @@
         }
         @keyframes rotation { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
-        /* ✅ MODIFIED: Switched back to a more stable Absolute Positioning layout for mobile */
+        /* ✅ MODIFIED: Final robust CSS for mobile view */
         @media (max-width: 1024px) {
             thead { display: none; }
             tr { 
@@ -57,21 +57,26 @@
             td { 
                 display: block; 
                 position: relative;
-                padding-left: 130px; /* Fixed padding for data alignment */
-                text-align: right;
+                padding-left: 120px; /* Create a fixed space on the left for the label */
+                min-height: 2.25rem; /* Ensure rows have a consistent minimum height */
+                text-align: right;  /* Align the actual data to the right */
                 border-bottom: 1px dotted var(--border-color); 
                 padding-top: 0.75rem;
                 padding-bottom: 0.75rem;
+                display: flex; /* Use flexbox for vertical centering of content */
+                align-items: center;
+                justify-content: flex-end; /* Push content to the right of the padded space */
             }
             td:last-child { border-bottom: none; }
             td::before {
                 content: attr(data-label);
                 position: absolute;
-                left: 1rem;
-                width: 110px; /* Fixed width for the label */
-                font-weight: bold;
+                top: 50%; /* Center the label vertically */
+                transform: translateY(-50%);
+                left: 0.75rem; /* Margin from the left edge of the card */
+                width: 110px; /* Fixed width for the label column */
                 text-align: left;
-                white-space: nowrap;
+                font-weight: bold;
                 color: var(--text-secondary);
             }
         }
@@ -128,6 +133,7 @@
                 <select id="statusFilter" class="rounded-md w-full border p-2"><option value="present">လက်ရှိရှိသူများ</option><option value="left">ထွက်သွားသူများ</option><option value="all">အားလုံး</option></select>
                 <select id="classFilter" class="rounded-md w-full border p-2"><option value="">အတန်းအားလုံး</option></select>
                 <select id="schoolFilter" class="rounded-md w-full border p-2"><option value="">ကျောင်းအားလုံး</option></select>
+                
                 <div class="relative">
                     <button id="subjectFilterBtn" type="button" class="w-full text-left border rounded-md shadow-sm px-4 py-2 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700">
                         ဘာသာရပ်များ
@@ -139,6 +145,7 @@
                         <label class="flex items-center"><input type="checkbox" data-subject="O" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 mr-2"> သစ်/ဟောင်း</label>
                     </div>
                 </div>
+
                 <button id="clearFiltersBtn" class="bg-gray-200 dark:bg-gray-600 hover:bg-gray-300 dark:hover:bg-gray-500 text-sm font-bold py-2 px-4 rounded-md">ရှင်းလင်းမည်</button>
             </div>
         </section>
@@ -163,6 +170,7 @@
     </div>
 
 <script>
+    // NO CHANGES IN JAVASCRIPT
     (() => {
         const state = {
             allData: [],
