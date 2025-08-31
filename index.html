@@ -44,14 +44,35 @@
         }
         @keyframes rotation { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
+        /* ✅ MODIFIED: Switched back to a more stable Absolute Positioning layout for mobile */
         @media (max-width: 1024px) {
             thead { display: none; }
-            tr { display: block; border: 1px solid var(--border-color); border-radius: 0.75rem; padding: 1rem; margin-bottom: 1rem; }
-            td { display: block; text-align: right; padding-left: 50%; position: relative; border-bottom: 1px dotted var(--border-color); padding-top: 0.5rem; padding-bottom: 0.5rem;}
+            tr { 
+                display: block; 
+                border: 1px solid var(--border-color); 
+                border-radius: 0.75rem; 
+                padding: 0.5rem 1rem; 
+                margin-bottom: 1rem; 
+            }
+            td { 
+                display: block; 
+                position: relative;
+                padding-left: 130px; /* Fixed padding for data alignment */
+                text-align: right;
+                border-bottom: 1px dotted var(--border-color); 
+                padding-top: 0.75rem;
+                padding-bottom: 0.75rem;
+            }
             td:last-child { border-bottom: none; }
             td::before {
-                content: attr(data-label); position: absolute; left: 1rem; font-weight: bold;
-                text-align: left; white-space: nowrap; color: var(--text-secondary);
+                content: attr(data-label);
+                position: absolute;
+                left: 1rem;
+                width: 110px; /* Fixed width for the label */
+                font-weight: bold;
+                text-align: left;
+                white-space: nowrap;
+                color: var(--text-secondary);
             }
         }
     </style>
@@ -107,7 +128,6 @@
                 <select id="statusFilter" class="rounded-md w-full border p-2"><option value="present">လက်ရှိရှိသူများ</option><option value="left">ထွက်သွားသူများ</option><option value="all">အားလုံး</option></select>
                 <select id="classFilter" class="rounded-md w-full border p-2"><option value="">အတန်းအားလုံး</option></select>
                 <select id="schoolFilter" class="rounded-md w-full border p-2"><option value="">ကျောင်းအားလုံး</option></select>
-                
                 <div class="relative">
                     <button id="subjectFilterBtn" type="button" class="w-full text-left border rounded-md shadow-sm px-4 py-2 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700">
                         ဘာသာရပ်များ
@@ -119,7 +139,6 @@
                         <label class="flex items-center"><input type="checkbox" data-subject="O" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 mr-2"> သစ်/ဟောင်း</label>
                     </div>
                 </div>
-
                 <button id="clearFiltersBtn" class="bg-gray-200 dark:bg-gray-600 hover:bg-gray-300 dark:hover:bg-gray-500 text-sm font-bold py-2 px-4 rounded-md">ရှင်းလင်းမည်</button>
             </div>
         </section>
@@ -136,8 +155,8 @@
              <button id="adminBtn" class="button bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-md">Admin Panel</button>
              <div class="ml-auto">
                  <button id="theme-toggle" type="button" class="text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg text-sm p-2.5">
-                     <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0_0_20_20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
-                     <svg id="theme-toggle-light-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0_0_20_20"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm-.707 8.486a1 1 0 011.414 0l.707-.707a1 1 0 01-1.414-1.414l-.707.707zM3 11a1 1 0 100-2H2a1 1 0 100 2h1z" clip-rule="evenodd"></path></svg>
+                     <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+                     <svg id="theme-toggle-light-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm-.707 8.486a1 1 0 011.414 0l.707-.707a1 1 0 01-1.414-1.414l-.707.707zM3 11a1 1 0 100-2H2a1 1 0 100 2h1z" clip-rule="evenodd"></path></svg>
                  </button>
              </div>
         </footer>
@@ -241,8 +260,8 @@
                         <td data-label="အတန်း"><input type="text" name="Class" value="${student.Class || ''}" class="w-full border p-1 rounded"></td>
                         <td data-label="ကျောင်း"><input type="text" name="School" value="${student.School || ''}" class="w-full border p-1 rounded"></td>
                         <td data-label="ခုံနံပါတ်"><input type="text" name="C_Num" value="${student.C_Num || ''}" class="w-20 border p-1 rounded"></td>
-                        <td data-label="ဘာသာရပ်များ" class="text-center">
-                            <div class="flex flex-wrap justify-center gap-2">
+                        <td data-label="ဘာသာရပ်များ">
+                            <div class="flex flex-wrap justify-end gap-2">
                             <input type="checkbox" name="P" ${student.P && String(student.P).toLowerCase() !== 'false' ? 'checked' : ''}>
                             <input type="checkbox" name="TH" ${student.TH && String(student.TH).toLowerCase() !== 'false' ? 'checked' : ''}>
                             <input type="checkbox" name="N" ${student.N && String(student.N).toLowerCase() !== 'false' ? 'checked' : ''}>
@@ -317,18 +336,13 @@
         const applyFilters = () => {
             let filtered = state.allData.filter(student => {
                 const { name, status, class: classFilter, school, selectedSubjects } = state.filters;
-                
                 const statusMatch = status === 'all' ||
                     (status === 'present' && (!student.Status || student.Status.toLowerCase() !== 'left')) ||
                     (status === 'left' && student.Status && student.Status.toLowerCase() === 'left');
-
-                // ✅ EXACT MATCH LOGIC
                 const allPossibleSubjects = ['P', 'TH', 'N', 'O'];
                 const studentSubjects = allPossibleSubjects.filter(key => student[key] && String(student[key]).toLowerCase() !== 'false');
-                
                 const subjectMatch = selectedSubjects.length === 0 || 
                     (studentSubjects.length === selectedSubjects.length && selectedSubjects.every(key => studentSubjects.includes(key)));
-
                 return statusMatch && subjectMatch &&
                     (!name || (student.Name && student.Name.toLowerCase().includes(name.toLowerCase()))) &&
                     (!classFilter || student.Class === classFilter) &&
@@ -349,9 +363,11 @@
             state.isLoading = true;
             if (state.isAdmin) {
                 state.isAdmin = false;
-                DOMElements.adminControls.classList.add('hidden');
-                DOMElements.adminBtn.textContent = 'Admin Panel';
-                DOMElements.adminBtn.classList.replace('bg-red-600', 'bg-gray-600');
+                if(DOMElements.adminControls) DOMElements.adminControls.classList.add('hidden');
+                if(DOMElements.adminBtn) {
+                    DOMElements.adminBtn.textContent = 'Admin Panel';
+                    DOMElements.adminBtn.classList.replace('bg-red-600', 'bg-gray-600');
+                }
             }
             render();
             if(DOMElements.yearSubtitle) DOMElements.yearSubtitle.textContent = `${toBurmeseNumber(year)} ခုနှစ် သံဃာစာရင်း`;
@@ -514,7 +530,6 @@
             }
         };
 
-        // Initialize the application
         document.addEventListener('DOMContentLoaded', () => {
             setupEventListeners();
             loadStudents(DOMElements.yearSelector.value);
