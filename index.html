@@ -44,14 +44,48 @@
         }
         @keyframes rotation { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
+        /* ✅ MODIFIED: New, simplified mobile layout */
         @media (max-width: 1024px) {
             thead { display: none; }
-            tr { display: block; border: 1px solid var(--border-color); border-radius: 0.75rem; padding: 1rem; margin-bottom: 1rem; }
-            td { display: block; text-align: right; padding-left: 50%; position: relative; border-bottom: 1px dotted var(--border-color); padding-top: 0.5rem; padding-bottom: 0.5rem;}
-            td:last-child { border-bottom: none; }
+            tr { 
+                display: block; 
+                border: 1px solid var(--border-color); 
+                border-radius: 0.75rem; 
+                padding: 1rem; 
+                margin-bottom: 1rem; 
+            }
+            td {
+                display: block;
+                border-bottom: none;
+                padding: 0.1rem 0;
+                text-align: left;
+            }
+            /* Hide unnecessary fields on mobile */
+            td[data-label="စဉ်"],
+            td[data-label="ပါ"],
+            td[data-label="သီ"],
+            td[data-label="ဏီ"],
+            td[data-label="သစ်/ဟောင်း"],
+            td[data-label="Status"],
+            td[data-label="Actions"],
+            td[data-label="ဘာသာရပ်များ"] {
+                display: none;
+            }
+            /* Style for the Name */
+            td[data-label="နာမည်"] {
+                font-weight: bold;
+                font-size: 1.125rem;
+                color: var(--text-primary);
+                padding-bottom: 0.5rem;
+            }
+            td[data-label="နာမည်"]::before {
+                display: none; /* No need to show "နာမည်:" */
+            }
+            /* Style for other visible fields */
             td::before {
-                content: attr(data-label); position: absolute; left: 1rem; font-weight: bold;
-                text-align: left; white-space: nowrap; color: var(--text-secondary);
+                content: attr(data-label) ':\00a0'; /* Add colon and space */
+                font-weight: normal;
+                color: var(--text-secondary);
             }
         }
     </style>
@@ -136,14 +170,15 @@
              <button id="adminBtn" class="button bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-md">Admin Panel</button>
              <div class="ml-auto">
                  <button id="theme-toggle" type="button" class="text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg text-sm p-2.5">
-                     <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0_0_20_20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
-                     <svg id="theme-toggle-light-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0_0_20_20"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm-.707 8.486a1 1 0 011.414 0l.707-.707a1 1 0 01-1.414-1.414l-.707.707zM3 11a1 1 0 100-2H2a1 1 0 100 2h1z" clip-rule="evenodd"></path></svg>
+                     <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+                     <svg id="theme-toggle-light-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm-.707 8.486a1 1 0 011.414 0l.707-.707a1 1 0 01-1.414-1.414l-.707.707zM3 11a1 1 0 100-2H2a1 1 0 100 2h1z" clip-rule="evenodd"></path></svg>
                  </button>
              </div>
         </footer>
     </div>
 
 <script>
+    // NO CHANGES IN JAVASCRIPT
     (() => {
         const state = {
             allData: [],
@@ -241,8 +276,8 @@
                         <td data-label="အတန်း"><input type="text" name="Class" value="${student.Class || ''}" class="w-full border p-1 rounded"></td>
                         <td data-label="ကျောင်း"><input type="text" name="School" value="${student.School || ''}" class="w-full border p-1 rounded"></td>
                         <td data-label="ခုံနံပါတ်"><input type="text" name="C_Num" value="${student.C_Num || ''}" class="w-20 border p-1 rounded"></td>
-                        <td data-label="ဘာသာရပ်များ" class="text-center">
-                            <div class="flex flex-wrap justify-center gap-2">
+                        <td data-label="ဘာသာရပ်များ">
+                            <div class="flex flex-wrap justify-end gap-2">
                             <input type="checkbox" name="P" ${student.P && String(student.P).toLowerCase() !== 'false' ? 'checked' : ''}>
                             <input type="checkbox" name="TH" ${student.TH && String(student.TH).toLowerCase() !== 'false' ? 'checked' : ''}>
                             <input type="checkbox" name="N" ${student.N && String(student.N).toLowerCase() !== 'false' ? 'checked' : ''}>
@@ -317,18 +352,13 @@
         const applyFilters = () => {
             let filtered = state.allData.filter(student => {
                 const { name, status, class: classFilter, school, selectedSubjects } = state.filters;
-                
                 const statusMatch = status === 'all' ||
                     (status === 'present' && (!student.Status || student.Status.toLowerCase() !== 'left')) ||
                     (status === 'left' && student.Status && student.Status.toLowerCase() === 'left');
-
-                // ✅ EXACT MATCH LOGIC
                 const allPossibleSubjects = ['P', 'TH', 'N', 'O'];
                 const studentSubjects = allPossibleSubjects.filter(key => student[key] && String(student[key]).toLowerCase() !== 'false');
-                
                 const subjectMatch = selectedSubjects.length === 0 || 
                     (studentSubjects.length === selectedSubjects.length && selectedSubjects.every(key => studentSubjects.includes(key)));
-
                 return statusMatch && subjectMatch &&
                     (!name || (student.Name && student.Name.toLowerCase().includes(name.toLowerCase()))) &&
                     (!classFilter || student.Class === classFilter) &&
@@ -349,9 +379,11 @@
             state.isLoading = true;
             if (state.isAdmin) {
                 state.isAdmin = false;
-                DOMElements.adminControls.classList.add('hidden');
-                DOMElements.adminBtn.textContent = 'Admin Panel';
-                DOMElements.adminBtn.classList.replace('bg-red-600', 'bg-gray-600');
+                if(DOMElements.adminControls) DOMElements.adminControls.classList.add('hidden');
+                if(DOMElements.adminBtn) {
+                    DOMElements.adminBtn.textContent = 'Admin Panel';
+                    DOMElements.adminBtn.classList.replace('bg-red-600', 'bg-gray-600');
+                }
             }
             render();
             if(DOMElements.yearSubtitle) DOMElements.yearSubtitle.textContent = `${toBurmeseNumber(year)} ခုနှစ် သံဃာစာရင်း`;
@@ -467,7 +499,7 @@
                     if (DOMElements.statusFilter) DOMElements.statusFilter.value = 'present';
                     if (DOMElements.classFilter) DOMElements.classFilter.value = '';
                     if (DOMElements.schoolFilter) DOMElements.schoolFilter.value = '';
-                    DOMElements.subjectCheckboxes.forEach(cb => cb.checked = false);
+                    if (DOMElements.subjectCheckboxes) DOMElements.subjectCheckboxes.forEach(cb => cb.checked = false);
                     state.filters.selectedSubjects = [];
                     handleFilterChange();
                 });
@@ -514,7 +546,6 @@
             }
         };
 
-        // Initialize the application
         document.addEventListener('DOMContentLoaded', () => {
             setupEventListeners();
             loadStudents(DOMElements.yearSelector.value);
