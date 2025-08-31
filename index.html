@@ -44,39 +44,47 @@
         }
         @keyframes rotation { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
-        /* ✅ MODIFIED: Final robust CSS for mobile view */
+        /* ✅ MODIFIED: New, simplified mobile layout */
         @media (max-width: 1024px) {
             thead { display: none; }
             tr { 
                 display: block; 
                 border: 1px solid var(--border-color); 
                 border-radius: 0.75rem; 
-                padding: 0.5rem 1rem; 
+                padding: 1rem; 
                 margin-bottom: 1rem; 
             }
-            td { 
-                display: block; 
-                position: relative;
-                padding-left: 120px; /* Create a fixed space on the left for the label */
-                min-height: 2.25rem; /* Ensure rows have a consistent minimum height */
-                text-align: right;  /* Align the actual data to the right */
-                border-bottom: 1px dotted var(--border-color); 
-                padding-top: 0.75rem;
-                padding-bottom: 0.75rem;
-                display: flex; /* Use flexbox for vertical centering of content */
-                align-items: center;
-                justify-content: flex-end; /* Push content to the right of the padded space */
-            }
-            td:last-child { border-bottom: none; }
-            td::before {
-                content: attr(data-label);
-                position: absolute;
-                top: 50%; /* Center the label vertically */
-                transform: translateY(-50%);
-                left: 0.75rem; /* Margin from the left edge of the card */
-                width: 110px; /* Fixed width for the label column */
+            td {
+                display: block;
+                border-bottom: none;
+                padding: 0.1rem 0;
                 text-align: left;
+            }
+            /* Hide unnecessary fields on mobile */
+            td[data-label="စဉ်"],
+            td[data-label="ပါ"],
+            td[data-label="သီ"],
+            td[data-label="ဏီ"],
+            td[data-label="သစ်/ဟောင်း"],
+            td[data-label="Status"],
+            td[data-label="Actions"],
+            td[data-label="ဘာသာရပ်များ"] {
+                display: none;
+            }
+            /* Style for the Name */
+            td[data-label="နာမည်"] {
                 font-weight: bold;
+                font-size: 1.125rem;
+                color: var(--text-primary);
+                padding-bottom: 0.5rem;
+            }
+            td[data-label="နာမည်"]::before {
+                display: none; /* No need to show "နာမည်:" */
+            }
+            /* Style for other visible fields */
+            td::before {
+                content: attr(data-label) ':\00a0'; /* Add colon and space */
+                font-weight: normal;
                 color: var(--text-secondary);
             }
         }
@@ -491,7 +499,7 @@
                     if (DOMElements.statusFilter) DOMElements.statusFilter.value = 'present';
                     if (DOMElements.classFilter) DOMElements.classFilter.value = '';
                     if (DOMElements.schoolFilter) DOMElements.schoolFilter.value = '';
-                    DOMElements.subjectCheckboxes.forEach(cb => cb.checked = false);
+                    if (DOMElements.subjectCheckboxes) DOMElements.subjectCheckboxes.forEach(cb => cb.checked = false);
                     state.filters.selectedSubjects = [];
                     handleFilterChange();
                 });
